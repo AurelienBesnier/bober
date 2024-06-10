@@ -4,7 +4,7 @@ from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QApplication
 
 from irodsgui.window import Window
-from version import __version__
+from irodsgui.version import __version__
 
 
 def quit_application():

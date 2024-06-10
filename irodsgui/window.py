@@ -1,9 +1,12 @@
+import sys
+
 from qtpy.QtGui import QKeySequence
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox
 
 from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
+from irodsgui.version import __version__
 
 
 class Window(MainWindow):
@@ -57,7 +60,6 @@ class Window(MainWindow):
         settingsAction.triggered.connect(self.editSettings)
         editMenu.addAction(settingsAction)
 
-
         # About/Help Menu
         aboutMenu = QMenu("About", self)
         aboutAction = QAction("About", self)
@@ -79,4 +81,14 @@ class Window(MainWindow):
 
     @staticmethod
     def about():
-        pass
+        msgBox = QMessageBox()
+        msgBox.setWindowTitle('PhenXFlow - About')
+        msgBox.setText(
+            "<div style='text-align: center'>"
+            "<h2>IrodsGui:</h2>"
+            "<p>A Simple GUI to irods</p><br>"
+            f"<p> version: {__version__}</p>"
+            f"<p>Python version: {sys.version}</p>"
+            "</div>"
+        )
+        msgBox.exec()
