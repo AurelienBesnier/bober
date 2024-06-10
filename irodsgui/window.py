@@ -6,6 +6,7 @@ from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
 
 from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
+from irodsgui.login_window import LoginWindow
 from irodsgui.version import __version__
 
 
@@ -16,18 +17,22 @@ class Window(MainWindow):
         self.center()
         self.resize(1280, 720)
         self.setStatusBar(self.statusbar)
-        # Widgets
+
+        # Main Widgets
         self.tabWidget = QTabWidget(self)
         self.listWidget = QListWidget(self)
         self.tabWidget.addTab(self.listWidget, "Explorer")
+
+        # Sub Widgets
         self.settings_window = SettingsWindow(None)
+        self.login_window = LoginWindow()
 
         self.setupMenus()
         self.setCentralWidget(self.tabWidget)
         self.setStatusBarMessage("Application Started", 5000)
 
     def login(self):
-        pass
+        self.login_window.exec()
 
     def setupList(self):
         pass
@@ -62,11 +67,16 @@ class Window(MainWindow):
 
         # About/Help Menu
         aboutMenu = QMenu("About", self)
+        helpAction = QAction("Help", self)
+        helpAction.triggered.connect(self.about)
+        helpAction.setShortcut(QKeySequence.StandardKey.HelpContents)
         aboutAction = QAction("About", self)
         aboutAction.triggered.connect(self.about)
         aboutQtAction = QAction(qtIcon, "About Qt", self)
         aboutQtAction.triggered.connect(
             lambda: QMessageBox.aboutQt(self, "About Qt"))
+        aboutMenu.addAction(helpAction)
+        aboutMenu.addSeparator()
         aboutMenu.addAction(aboutAction)
         aboutMenu.addAction(aboutQtAction)
 
