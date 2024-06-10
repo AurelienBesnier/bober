@@ -1,11 +1,31 @@
-from kivy.app import App
-from kivy.uix.label import Label
+import sys
+
+from qtpy.QtCore import QSettings
+from qtpy.QtWidgets import QApplication
+
+from irodsgui.window import Window
+from version import __version__
 
 
-class MainWindow(App):
+def quit_application():
+    print("Quitting application")
+    sys.exit(app.exit())
 
-    def build(self):
-        return Label(text="Hello World !")
 
+is_frozen = getattr(sys, 'frozen', False)
 
-MainWindow().run()
+if __name__ == "__main__":
+    if is_frozen:
+        import pyi_splash  # noqa
+
+        pyi_splash.update_text("Starting app...")
+    app = QApplication(sys.argv)
+    app.setApplicationName("IrodsGui")
+    app.setApplicationVersion(__version__)
+    settings = QSettings()
+    win = Window()
+    win.show()
+
+    app.setQuitOnLastWindowClosed(True)
+    app.lastWindowClosed.connect(quit_application)
+    app.exec()
