@@ -5,4 +5,5 @@ dependencies:
   - python-irodsclient
   - pyside6
   - qtpy
+  - pyinstaller
   
