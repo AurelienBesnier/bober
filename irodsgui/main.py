@@ -12,13 +12,7 @@ def quit_application():
     sys.exit(app.exit())
 
 
-is_frozen = getattr(sys, 'frozen', False)
-
 if __name__ == "__main__":
-    if is_frozen:
-        import pyi_splash  # noqa
-
-        pyi_splash.update_text("Starting app...")
     app = QApplication(sys.argv)
     app.setOrganizationName("IrodsGui")
     app.setApplicationName("IrodsGui")
