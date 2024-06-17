@@ -71,7 +71,7 @@ class SettingsWindow(QWidget):
                                                               "configuration",
                                                               filter="config files (*.json)",
                                                               options=QFileDialog.Option.DontUseNativeDialog)[
-            0].toString())[7:]
+            0].toString()).removeprefix('file://')
         print(self.config_location)
 
         if self.config_location == "":
@@ -92,7 +92,6 @@ class SettingsWindow(QWidget):
             self.portEdit.setText(str(self.port))
             self.zoneEdit.setText(self.zone)
             self.rootEdit.setText(self.rootPath)
-
 
     def save(self):
         self.settings.setValue("config_path", self.config_location)

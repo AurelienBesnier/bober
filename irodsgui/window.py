@@ -81,7 +81,7 @@ class Window(MainWindow):
             self.changeFolder()
         else:  # selected a file
             # open file
-            self.openFile(self.path+'/'+item.text())
+            self.openFile(posixpath.join(self.path, item.text()))
 
     def changeFolder(self):
         self.setStatusBarMessage(self.path)
@@ -112,7 +112,7 @@ class Window(MainWindow):
             print(local_path)
         except OVERWRITE_WITHOUT_FORCE_FLAG:
             print("file already there")
-        QDesktopServices.openUrl(QUrl('file://'+local_path))
+        QDesktopServices.openUrl(QUrl.fromLocalFile(local_path))
 
     def editSettings(self):
         self.settings_window.show()
