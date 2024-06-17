@@ -38,3 +38,8 @@ jobs:
         python -m pip install .
         cd irodsgui/
         pyinstaller main.py
+    - name: upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ matrix.os }}-${{ matrix.version }}
+        path: irodsgui/dist
