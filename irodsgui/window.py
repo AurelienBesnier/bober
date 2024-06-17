@@ -1,5 +1,6 @@
 import sys
 import os
+import posixpath
 
 from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
 from qtpy.QtGui import QKeySequence, QDesktopServices
@@ -76,7 +77,7 @@ class Window(MainWindow):
     def onDoubleClick(self, item):
         if item.type() == 0:  # selected a folder
             self.path += '/' + item.text()
-            self.path = os.path.normpath(self.path)
+            self.path = posixpath.normpath(self.path)
             self.changeFolder()
         else:  # selected a file
             # open file

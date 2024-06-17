@@ -2,6 +2,7 @@ from qtpy.QtGui import QIntValidator
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QWidget, QGridLayout, QLineEdit, QPushButton, \
     QLabel, QFileDialog
+import json
 
 
 class SettingsWindow(QWidget):
@@ -77,6 +78,21 @@ class SettingsWindow(QWidget):
             return
         else:
             self.cfgEdit.setText(self.config_location)
+            self.parseConfig()
+
+    def parseConfig(self):
+        with open(self.config_location, 'r') as f:
+            data = json.load(f)
+            self.port = data['irods_port']
+            self.host = data['irods_host']
+            self.zone = data['irods_zone_name']
+            self.rootPath = data['irods_home']
+
+            self.hostEdit.setText(self.host)
+            self.portEdit.setText(str(self.port))
+            self.zoneEdit.setText(self.zone)
+            self.rootEdit.setText(self.rootPath)
+
 
     def save(self):
         self.settings.setValue("config_path", self.config_location)
