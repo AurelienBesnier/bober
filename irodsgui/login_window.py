@@ -1,5 +1,6 @@
 import irods
-from qtpy.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton
+from qtpy.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, \
+    QMessageBox
 from qtpy.QtCore import QSettings
 
 from irods.session import iRODSSession
@@ -23,6 +24,7 @@ class LoginWindow(QDialog):
         self.layout.addRow("Username: ", self.usernameEdit)
         self.layout.addRow("Password: ", self.passwordEdit)
         self.layout.addRow(self.confirmButton)
+        self.adjustSize()
 
     def login(self):
         cfg = self.settings.value('config_path')
@@ -43,8 +45,31 @@ class LoginWindow(QDialog):
                                               password=self.passwordEdit.text(),
                                               host=host, port=port, zone=zone,
                                               env_file=cfg, configure=True,
-                                              auto_cleanup=True, **SSL_options)
-            self.accept()
+                                              **SSL_options)
+            print(glob.irods_session.server_version)
         except irods.exception.NetworkException as e:
-            print(e)
+            msgbox = QMessageBox()
+            msgbox.setWindowTitle("Login")
+            msgbox.setText(
+                "<p>Network Error.</p>")
+            msgbox.setIcon(QMessageBox.Icon.Warning)
+            msgbox.exec()
+            return
+        except irods.exception.CAT_INVALID_USER as e:
+            msgbox = QMessageBox()
+            msgbox.setWindowTitle("Login")
+            msgbox.setText(
+                "<p>Invalid user name.</p>")
+            msgbox.setIcon(QMessageBox.Icon.Warning)
+            msgbox.exec()
+            return
+        except irods.exception.CAT_INVALID_AUTHENTICATION as e:
+            msgbox = QMessageBox()
+            msgbox.setWindowTitle("Login")
+            msgbox.setText(
+                "<p>Invalid authentification.</p>")
+            msgbox.setIcon(QMessageBox.Icon.Warning)
+            msgbox.exec()
+            return
+        self.accept()
 

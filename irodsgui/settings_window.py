@@ -66,11 +66,11 @@ class SettingsWindow(QWidget):
 
     def selectCfg(self):
         self.config_location = str(QFileDialog.getOpenFileUrl(self,
-                                                         "Select irods "
-                                                         "configuration",
-                                                         filter="config files (*.json)",
-                                                         options=QFileDialog.Option.DontUseNativeDialog)[
-                                  0].toString())[7:]
+                                                              "Select irods "
+                                                              "configuration",
+                                                              filter="config files (*.json)",
+                                                              options=QFileDialog.Option.DontUseNativeDialog)[
+            0].toString())[7:]
         print(self.config_location)
 
         if self.config_location == "":

@@ -1,7 +1,7 @@
 import sys
 import os
 
-from qtpy.QtCore import Qt, QSettings, QUrl
+from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
 from qtpy.QtGui import QKeySequence, QDesktopServices
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem
@@ -11,8 +11,8 @@ from irodsgui.login_window import LoginWindow
 from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
 from irodsgui.version import __version__
+from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG
 import irodsgui.globals as glob
-from PySide6.QtCore import QStandardPaths
 
 
 class Window(MainWindow):
@@ -26,6 +26,7 @@ class Window(MainWindow):
         # Main Widgets
         self.tabWidget = QTabWidget(self)
         self.listWidget = QListWidget(self)
+        self.listWidget.itemClicked.connect(self.detailItem)
         self.listWidget.itemDoubleClicked.connect(self.onDoubleClick)
         self.tabWidget.addTab(self.listWidget, "Explorer")
         self.detailDock = DetailDock()
@@ -45,7 +46,7 @@ class Window(MainWindow):
 
         self.setupMenus()
         self.setCentralWidget(self.tabWidget)
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.detailDock)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.detailDock)
         self.setStatusBarMessage("Application Started", 5000)
 
     def login(self):
@@ -67,6 +68,10 @@ class Window(MainWindow):
                 self.listWidget.addItem(file)
 
             self.listWidget.sortItems()
+
+    def detailItem(self, item):
+        if item.type() != 0:
+            self.detailDock.updateInfo(item.text())
 
     def onDoubleClick(self, item):
         if item.type() == 0:  # selected a folder
@@ -97,10 +102,15 @@ class Window(MainWindow):
 
     def openFile(self, filepath):
         print(f"opening file {filepath}")
-        local_path = os.path.join(str(QStandardPaths.writableLocation(QStandardPaths.TempLocation)),
-                                  'irodsgui', os.path.basename(filepath))
-        os.makedirs(local_path, exist_ok=True)
-        glob.irods_session.data_objects.get(filepath, local_path=local_path)
+        tmp_folder = os.path.join(str(QStandardPaths.writableLocation(QStandardPaths.TempLocation)),
+                                  'irodsgui')
+        os.makedirs(tmp_folder, exist_ok=True)
+        local_path = os.path.join(tmp_folder, os.path.basename(filepath))
+        try:
+            glob.irods_session.data_objects.get(filepath, local_path=local_path)
+            print(local_path)
+        except OVERWRITE_WITHOUT_FORCE_FLAG:
+            print("file already there")
         QDesktopServices.openUrl(QUrl('file://'+local_path))
 
     def editSettings(self):
