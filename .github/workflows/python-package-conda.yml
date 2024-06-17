@@ -37,7 +37,7 @@ jobs:
       run: |
         python -m pip install .
         cd irodsgui/
-        pyinstaller main.py -n irodsgui
+        pyinstaller main.py -n irodsgui --collect-all irods
     - name: upload
       uses: actions/upload-artifact@v4
       with:
