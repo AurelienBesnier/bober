@@ -1,3 +1,4 @@
+from qtpy.QtGui import QIntValidator
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QWidget, QGridLayout, QLineEdit, QPushButton, \
     QLabel, QFileDialog
@@ -11,11 +12,31 @@ class SettingsWindow(QWidget):
         self.layout = QGridLayout(self)
         self.cfgLabel = QLabel("Config path:")
         self.cfgEdit = QLineEdit()
+        self.hostLabel = QLabel("Host:")
+        self.hostEdit = QLineEdit()
+        self.portLabel = QLabel("Port:")
+        self.portEdit = QLineEdit()
+        self.portEdit.setValidator(QIntValidator(0, 9999999))
+
+        self.zoneLabel = QLabel("Zone:")
+        self.zoneEdit = QLineEdit()
+        self.rootLabel = QLabel("Root path:")
+        self.rootEdit = QLineEdit()
         self.config_location = self.settings.value('config_path',
                                                    defaultValue='')
+        self.host = self.settings.value('host', defaultValue='')
+        self.port = self.settings.value('port', defaultValue='')
+        self.zone = self.settings.value('zone', defaultValue='')
+        self.rootPath = self.settings.value('root_path', defaultValue='/')
+
         self.cfgEdit.setText(self.config_location)
         self.cfgButton = QPushButton("...")
         self.cfgButton.clicked.connect(self.selectCfg)
+
+        self.hostEdit.setText(self.host)
+        self.portEdit.setText(self.port)
+        self.zoneEdit.setText(self.zone)
+        self.rootEdit.setText(self.rootPath)
 
         self.saveButton = QPushButton("Save")
         self.saveButton.clicked.connect(self.save)
@@ -27,25 +48,42 @@ class SettingsWindow(QWidget):
         self.layout.addWidget(self.cfgLabel, 0, 0)
         self.layout.addWidget(self.cfgEdit, 0, 1)
         self.layout.addWidget(self.cfgButton, 0, 2)
-        self.layout.addWidget(self.saveButton, 1, 0)
-        self.layout.addWidget(self.cancelButton, 1, 1)
+
+        self.layout.addWidget(self.hostLabel, 1, 0)
+        self.layout.addWidget(self.hostEdit, 1, 1, 1, 2)
+
+        self.layout.addWidget(self.portLabel, 2, 0)
+        self.layout.addWidget(self.portEdit, 2, 1, 1, 2)
+
+        self.layout.addWidget(self.zoneLabel, 3, 0)
+        self.layout.addWidget(self.zoneEdit, 3, 1, 1, 2)
+
+        self.layout.addWidget(self.rootLabel, 4, 0)
+        self.layout.addWidget(self.rootEdit, 4, 1, 1, 2)
+
+        self.layout.addWidget(self.saveButton, 5, 0)
+        self.layout.addWidget(self.cancelButton, 5, 1, 1, 2)
 
     def selectCfg(self):
-        config_location = str(QFileDialog.getOpenFileUrl(self,
+        self.config_location = str(QFileDialog.getOpenFileUrl(self,
                                                          "Select irods "
                                                          "configuration",
                                                          filter="config files (*.json)",
-                                                         options=QFileDialog.Option.DontUseNativeDialog)[0])
-        print(config_location)
-        if config_location == "":
+                                                         options=QFileDialog.Option.DontUseNativeDialog)[
+                                  0].toString())[7:]
+        print(self.config_location)
+
+        if self.config_location == "":
             return
         else:
-            self.config_location = self.settings.setValue("config_path",
-                                                          config_location)
             self.cfgEdit.setText(self.config_location)
 
     def save(self):
         self.settings.setValue("config_path", self.config_location)
+        self.settings.setValue("port", self.portEdit.text())
+        self.settings.setValue("host", self.hostEdit.text())
+        self.settings.setValue("zone", self.zoneEdit.text())
+        self.settings.setValue("root_path", self.rootEdit.text())
         self.close()
 
     def keyPressEvent(self, event, **kwargs):

@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
         pyi_splash.update_text("Starting app...")
     app = QApplication(sys.argv)
+    app.setOrganizationName("IrodsGui")
     app.setApplicationName("IrodsGui")
     app.setApplicationVersion(__version__)
     settings = QSettings()
