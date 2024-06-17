@@ -1,0 +1,38 @@
+name: Python Package using Conda
+
+on: [push, workflow_dispatch]
+
+
+jobs:
+
+  linux-mac:
+    name: ${{ matrix.os }} 
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        solver: ["libmamba"]
+      max-parallel: 5
+      
+    environment: anaconda_build
+  
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
+        environment-file: conda/environment.yml
+        conda-solver: ${{ matrix.solver }}
+        auto-activate-base: false
+    - name: build
+      run: |
+        python -m pip install .
