@@ -6,7 +6,7 @@ from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
 from qtpy.QtGui import QKeySequence, QDesktopServices
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
-    QToolBar, QPushButton
+    QToolBar, QPushButton, QFileDialog, QAbstractItemView
 
 from irodsgui.detail_dock import DetailDock
 from irodsgui.login_window import LoginWindow
@@ -17,6 +17,12 @@ from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG
 from irods.models import DataObject
 
 import irodsgui.globals as glob
+from threading import Thread
+
+
+def download_thread(path, download_target, folder):
+    glob.irods_session.data_objects.get(
+        posixpath.join(path, download_target), folder)
 
 
 class Window(MainWindow):
@@ -47,6 +53,8 @@ class Window(MainWindow):
         self.listWidget = QListWidget(self)
         self.listWidget.itemClicked.connect(self.detailItem)
         self.listWidget.itemDoubleClicked.connect(self.onDoubleClick)
+        self.listWidget.setSelectionMode(
+            QAbstractItemView.SelectionMode.ExtendedSelection)
         self.tabWidget.addTab(self.listWidget, "Explorer")
         self.detailDock = DetailDock()
 
@@ -54,6 +62,7 @@ class Window(MainWindow):
         self.settings_window = SettingsWindow(None)
         self.login_window = LoginWindow()
         self.settings = QSettings()
+        self.menu = QMenu(self)
 
         # Vars
         self.root = ""
@@ -146,8 +155,9 @@ class Window(MainWindow):
 
     def openFile(self, filepath):
         print(f"opening file {filepath}")
-        tmp_folder = os.path.join(str(QStandardPaths.writableLocation(QStandardPaths.TempLocation)),
-                                  'irodsgui')
+        tmp_folder = os.path.join(
+            str(QStandardPaths.writableLocation(QStandardPaths.TempLocation)),
+            'irodsgui')
         os.makedirs(tmp_folder, exist_ok=True)
         local_path = os.path.join(tmp_folder, os.path.basename(filepath))
         try:
@@ -167,6 +177,8 @@ class Window(MainWindow):
             QStyle.StandardPixmap.SP_ComputerIcon)
         qtIcon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_TitleBarMenuButton)
+        dlIcon = self.style().standardIcon(
+            QStyle.StandardPixmap.SP_ToolBarVerticalExtensionButton)
         # File Menu
         fileMenu = QMenu("File", self)
         quitAction = QAction(quitIcon, "Quit", self)
@@ -200,6 +212,11 @@ class Window(MainWindow):
         aboutMenu.addAction(aboutAction)
         aboutMenu.addAction(aboutQtAction)
 
+        # Download menu
+        downloadAction = QAction(dlIcon, "Download", self)
+        downloadAction.triggered.connect(self.download)
+        self.menu.addAction(downloadAction)
+
         # Add everything
         self.menubar.addAction(fileMenu.menuAction())
         self.menubar.addAction(editMenu.menuAction())
@@ -222,3 +239,24 @@ class Window(MainWindow):
             "</div>"
         )
         msgBox.exec()
+
+    def download(self):
+        doc_folder = str(QStandardPaths.writableLocation(
+            QStandardPaths.DocumentsLocation))
+        folder = QFileDialog.getExistingDirectory(self,
+                                                  "Save to folder",
+                                                  directory=doc_folder,
+                                                  options=QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontUseNativeDialog)
+        print(folder)
+        if folder != "":
+            download_targets = self.listWidget.selectedIndexes()
+            for idx in download_targets:
+                target = self.listWidget.itemFromIndex(idx)
+                t = Thread(target=download_thread, args=(self.path,
+                                                         target.text(),
+                                                         folder))
+                t.daemon = True
+                t.start()
+
+    def contextMenuEvent(self, a0, QContextMenuEvent=None) -> None:
+        self.menu.exec(a0.globalPos())
