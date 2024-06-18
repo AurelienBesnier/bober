@@ -1,5 +1,5 @@
 from qtpy.QtGui import QIntValidator
-from qtpy.QtCore import Qt, QSettings
+from qtpy.QtCore import Qt, QSettings, QStandardPaths
 from qtpy.QtWidgets import QWidget, QGridLayout, QLineEdit, QPushButton, \
     QLabel, QFileDialog
 import json
@@ -66,11 +66,14 @@ class SettingsWindow(QWidget):
         self.layout.addWidget(self.cancelButton, 5, 1, 1, 2)
 
     def selectCfg(self):
+        home_folder = QStandardPaths.writableLocation(
+            QStandardPaths.StandardLocation.HomeLocation)
+        print(home_folder)
         self.config_location = QFileDialog.getOpenFileUrl(self,
                                                           "Select irods "
                                                           "configuration",
-                                                          filter="config files (*.json)",
-                                                          options=QFileDialog.Option.DontUseNativeDialog)[
+                                                          dir=home_folder,
+                                                          filter="config files (*.json)")[
             0].toLocalFile()
         print(self.config_location)
 

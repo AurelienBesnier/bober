@@ -52,7 +52,7 @@ class LoginWindow(QDialog):
             msgbox.setWindowTitle("Login")
             msgbox.setText(
                 "<p>Network Error.</p>")
-            msgbox.setIcon(QMessageBox.Icon.Warning)
+            msgbox.setIcon(QMessageBox.Icon.Critical)
             msgbox.exec()
             return
         except irods.exception.CAT_INVALID_USER as e:

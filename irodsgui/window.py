@@ -101,22 +101,7 @@ class Window(MainWindow):
             self.setStatusBarMessage("logged in", 5000)
             self.root = self.settings.value('root_path')
             self.path = self.root
-            self.details.clear()
-            self.listWidget.clear()
-
-            dirs = [QListWidgetItem(self.folderIcon, '..')]
-            files = []
-            coll = glob.irods_session.collections.get(self.root)
-            dirs.extend([QListWidgetItem(self.folderIcon, d.name)
-                        for d in coll.subcollections])
-            files.extend([QListWidgetItem(self.fileIcon, f.name, None, 1000)
-                         for f in coll.data_objects])
-            for directory in dirs:
-                self.listWidget.addItem(directory)
-            for file in files:
-                self.listWidget.addItem(file)
-
-            self.listWidget.sortItems()
+            self.changeFolder()
 
     def detailItem(self, item):
         if item.type() != 0:
@@ -147,6 +132,7 @@ class Window(MainWindow):
                     for d in coll.subcollections])
         files.extend([QListWidgetItem(self.fileIcon, f.name, None, 1000)
                      for f in coll.data_objects])
+
         for directory in dirs:
             self.listWidget.addItem(directory)
         for file in files:
@@ -247,7 +233,7 @@ class Window(MainWindow):
         folder = QFileDialog.getExistingDirectory(self,
                                                   "Save to folder",
                                                   directory=doc_folder,
-                                                  options=QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontUseNativeDialog)
+                                                  options=QFileDialog.Option.ShowDirsOnly)
         print(folder)
         if folder != "":
             download_targets = self.listWidget.selectedIndexes()
