@@ -127,7 +127,7 @@ class Window(MainWindow):
 
     def onDoubleClick(self, item):
         if item.type() == 0:  # selected a folder
-            self.path += '/' + item.text()
+            self.path = posixpath.join(self.path, item.text())
             self.path = posixpath.normpath(self.path)
             self.changeFolder()
         else:  # selected a file
