@@ -14,6 +14,7 @@ from irodsgui.settings_window import SettingsWindow
 from irodsgui.version import __version__
 from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG
 import irodsgui.globals as glob
+from irods.models import DataObject
 
 
 class Window(MainWindow):
@@ -40,6 +41,7 @@ class Window(MainWindow):
         # Vars
         self.root = ""
         self.path = ""
+        self.details = []
         self.folderIcon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_DirIcon)
         self.fileIcon = self.style().standardIcon(
@@ -55,6 +57,7 @@ class Window(MainWindow):
             self.setStatusBarMessage("logged in", 5000)
             self.root = self.settings.value('root_path')
             self.path = self.root
+            self.details.clear()
 
             dirs = [QListWidgetItem(self.folderIcon, '..')]
             files = []
@@ -72,6 +75,10 @@ class Window(MainWindow):
 
     def detailItem(self, item):
         if item.type() != 0:
+            print(posixpath.join(self.path, item.text()))
+            meta = glob.irods_session.metadata.get(
+                DataObject, posixpath.join(self.path, item.text()))
+            print(meta)
             self.detailDock.updateInfo(item.text())
 
     def onDoubleClick(self, item):
@@ -86,6 +93,7 @@ class Window(MainWindow):
     def changeFolder(self):
         self.setStatusBarMessage(self.path)
         self.listWidget.clear()
+        self.details.clear()
 
         dirs = [QListWidgetItem(self.folderIcon, '..')]
         files = []
@@ -108,8 +116,8 @@ class Window(MainWindow):
         os.makedirs(tmp_folder, exist_ok=True)
         local_path = os.path.join(tmp_folder, os.path.basename(filepath))
         try:
-            glob.irods_session.data_objects.get(filepath, local_path=local_path)
-            print(local_path)
+            glob.irods_session.data_objects.get(
+                filepath, local_path=local_path)
         except OVERWRITE_WITHOUT_FORCE_FLAG:
             print("file already there")
         QDesktopServices.openUrl(QUrl.fromLocalFile(local_path))

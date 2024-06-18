@@ -66,12 +66,12 @@ class SettingsWindow(QWidget):
         self.layout.addWidget(self.cancelButton, 5, 1, 1, 2)
 
     def selectCfg(self):
-        self.config_location = str(QFileDialog.getOpenFileUrl(self,
-                                                              "Select irods "
-                                                              "configuration",
-                                                              filter="config files (*.json)",
-                                                              options=QFileDialog.Option.DontUseNativeDialog)[
-            0].toString()).removeprefix('file://')
+        self.config_location = QFileDialog.getOpenFileUrl(self,
+                                                          "Select irods "
+                                                          "configuration",
+                                                          filter="config files (*.json)",
+                                                          options=QFileDialog.Option.DontUseNativeDialog)[
+            0].toLocalFile()
         print(self.config_location)
 
         if self.config_location == "":

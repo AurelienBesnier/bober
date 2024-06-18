@@ -1,3 +1,5 @@
 # global variables file
 
-irods_session = None
+from irods.session import iRODSSession
+
+irods_session: iRODSSession
