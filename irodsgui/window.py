@@ -5,7 +5,8 @@ import posixpath
 from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
 from qtpy.QtGui import QKeySequence, QDesktopServices
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
-    QMessageBox, QDialog, QListWidgetItem
+    QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
+    QToolBar, QPushButton
 
 from irodsgui.detail_dock import DetailDock
 from irodsgui.login_window import LoginWindow
@@ -13,8 +14,9 @@ from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
 from irodsgui.version import __version__
 from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG
-import irodsgui.globals as glob
 from irods.models import DataObject
+
+import irodsgui.globals as glob
 
 
 class Window(MainWindow):
@@ -26,7 +28,22 @@ class Window(MainWindow):
         self.setStatusBar(self.statusbar)
 
         # Main Widgets
+        self.content = QWidget(self)
+        self.contentLayout = QVBoxLayout(self.content)
+        self.toolbar = QToolBar(self)
+        self.backButton = QPushButton("Back", self)
+        self.backButton.setIcon(self.style().standardIcon(
+            QStyle.StandardPixmap.SP_ArrowBack))
+        self.backButton.clicked.connect(self.backFolder)
+        self.searchBar = QLineEdit(self)
+        self.searchBar.setPlaceholderText("Filter...")
+        self.searchBar.textChanged.connect(lambda:
+                                           self.changeFilter(self.searchBar.text()))
         self.tabWidget = QTabWidget(self)
+        self.toolbar.addWidget(self.backButton)
+        self.toolbar.addWidget(self.searchBar)
+        self.contentLayout.addWidget(self.toolbar)
+        self.contentLayout.addWidget(self.tabWidget)
         self.listWidget = QListWidget(self)
         self.listWidget.itemClicked.connect(self.detailItem)
         self.listWidget.itemDoubleClicked.connect(self.onDoubleClick)
@@ -48,9 +65,26 @@ class Window(MainWindow):
             QStyle.StandardPixmap.SP_FileLinkIcon)
 
         self.setupMenus()
-        self.setCentralWidget(self.tabWidget)
+        self.setCentralWidget(self.content)
         self.addDockWidget(Qt.RightDockWidgetArea, self.detailDock)
         self.setStatusBarMessage("Application Started", 5000)
+
+    def changeFilter(self, pattern):
+        for row in range(self.listWidget.count()):
+            it = self.listWidget.item(row)
+            if pattern:
+                it.setHidden(not self.filter(pattern, it.text()))
+            else:
+                it.setHidden(False)
+
+    @staticmethod
+    def filter(text, keywords):
+        return text in keywords
+
+    def backFolder(self):
+        if self.path:
+            self.path = posixpath.dirname(self.path)
+            self.changeFolder()
 
     def login(self):
         if self.login_window.exec() == QDialog.Accepted:
@@ -58,6 +92,7 @@ class Window(MainWindow):
             self.root = self.settings.value('root_path')
             self.path = self.root
             self.details.clear()
+            self.listWidget.clear()
 
             dirs = [QListWidgetItem(self.folderIcon, '..')]
             files = []
