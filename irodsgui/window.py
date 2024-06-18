@@ -109,7 +109,8 @@ class Window(MainWindow):
             meta = glob.irods_session.metadata.get(
                 DataObject, posixpath.join(self.path, item.text()))
             print(meta)
-            self.detailDock.updateInfo(item.text())
+            data = glob.irods_session.data_objects.get(posixpath.join(self.path, item.text()))
+            self.detailDock.updateInfo(item.text(), data.replicas, data.collection)
 
     def onDoubleClick(self, item):
         if item.type() == 0:  # selected a folder

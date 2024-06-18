@@ -15,9 +15,16 @@ class DetailDock(QDockWidget):
         self.layoutDetail = QFormLayout(self.groupDetail)
         self.filename = QLabel(self)
         self.filename.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.replicas = QLabel(self)
+        self.replicas.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.coll = QLabel(self)
+        self.coll.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.layoutDetail.addRow("File name: ", self.filename)
+        self.layoutDetail.addRow("Replicas: ", self.replicas)
+        self.layoutDetail.addRow("Collection: ", self.coll)
         self.setWidget(self.content)
 
-    def updateInfo(self, filename):
+    def updateInfo(self, filename, replicas, coll):
         self.filename.setText(filename)
-        self.filename.adjustSize()
+        self.replicas.setText(";".join([str(s.resource_name) for s in replicas]))
+        self.coll.setText(coll.name)
