@@ -8,15 +8,16 @@ from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
     QToolBar, QPushButton, QFileDialog, QAbstractItemView
 
+import irodsgui.globals as glob
 from irodsgui.detail_dock import DetailDock
 from irodsgui.login_window import LoginWindow
 from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
 from irodsgui.version import __version__
+
 from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG
 from irods.models import DataObject
 
-import irodsgui.globals as glob
 from threading import Thread
 
 

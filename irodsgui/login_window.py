@@ -1,8 +1,8 @@
-import irods
 from qtpy.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, \
     QMessageBox
 from qtpy.QtCore import QSettings
 
+import irods
 from irods.session import iRODSSession
 
 import irodsgui.globals as glob
@@ -72,4 +72,3 @@ class LoginWindow(QDialog):
             msgbox.exec()
             return
         self.accept()
-
