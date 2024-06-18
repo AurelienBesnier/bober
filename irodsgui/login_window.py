@@ -48,14 +48,17 @@ class LoginWindow(QDialog):
                                               **SSL_options)
             print(glob.irods_session.server_version)
         except irods.exception.NetworkException as e:
+            print(e)
             msgbox = QMessageBox()
             msgbox.setWindowTitle("Login")
             msgbox.setText(
-                "<p>Network Error.</p>")
+                "<p>Network Error.</p>"
+                f"<p>{e}</p>")
             msgbox.setIcon(QMessageBox.Icon.Critical)
             msgbox.exec()
             return
         except irods.exception.CAT_INVALID_USER as e:
+            print(e)
             msgbox = QMessageBox()
             msgbox.setWindowTitle("Login")
             msgbox.setText(
@@ -64,6 +67,7 @@ class LoginWindow(QDialog):
             msgbox.exec()
             return
         except irods.exception.CAT_INVALID_AUTHENTICATION as e:
+            print(e)
             msgbox = QMessageBox()
             msgbox.setWindowTitle("Login")
             msgbox.setText(
