@@ -15,7 +15,8 @@ from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
 from irodsgui.version import __version__
 
-from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, CAT_NO_ROWS_FOUND
+from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, CAT_NO_ROWS_FOUND, \
+    CAT_NO_ACCESS_PERMISSION
 from irods.models import DataObject
 
 from threading import Thread
@@ -170,6 +171,14 @@ class Window(MainWindow):
                 filepath, local_path=local_path)
         except OVERWRITE_WITHOUT_FORCE_FLAG:
             print("file already there")
+        except CAT_NO_ACCESS_PERMISSION:
+            msgbox = QMessageBox()
+            msgbox.setWindowTitle("Open File")
+            msgbox.setText(
+                "<p>Permission denied.</p>")
+            msgbox.setIcon(QMessageBox.Icon.Critical)
+            msgbox.exec()
+            return
         QDesktopServices.openUrl(QUrl.fromLocalFile(local_path))
 
     def editSettings(self):
