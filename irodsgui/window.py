@@ -52,7 +52,7 @@ class Window(MainWindow):
         self.contentLayout.addWidget(self.toolbar)
         self.contentLayout.addWidget(self.tabWidget)
         self.listWidget = QListWidget(self)
-        self.listWidget.itemClicked.connect(self.detailItem)
+        self.listWidget.currentItemChanged.connect(self.detailItem)
         self.listWidget.itemDoubleClicked.connect(self.onDoubleClick)
         self.listWidget.setSelectionMode(
             QAbstractItemView.SelectionMode.ExtendedSelection)
