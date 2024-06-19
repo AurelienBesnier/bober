@@ -15,15 +15,26 @@ from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
 from irodsgui.version import __version__
 
-from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG
+from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, CAT_NO_ROWS_FOUND
 from irods.models import DataObject
 
 from threading import Thread
 
 
 def download_thread(path, download_target, folder):
-    glob.irods_session.data_objects.get(
-        posixpath.join(path, download_target), folder)
+    try:
+        if not glob.irods_session.data_objects.exists(path):
+            coll = glob.irods_session.collections.get(
+                posixpath.join(path, download_target))
+            for d in coll.data_objects:
+                save_folder = os.path.join(folder, coll.name)
+                os.makedirs(save_folder, exist_ok=True)
+                glob.irods_session.data_objects.get(d.path, save_folder)
+        else:
+            glob.irods_session.data_objects.get(
+                posixpath.join(path, download_target), folder)
+    except CAT_NO_ROWS_FOUND as e:
+        print(e)
 
 
 class Window(MainWindow):
@@ -109,8 +120,10 @@ class Window(MainWindow):
             meta = glob.irods_session.metadata.get(
                 DataObject, posixpath.join(self.path, item.text()))
             print(meta)
-            data = glob.irods_session.data_objects.get(posixpath.join(self.path, item.text()))
-            self.detailDock.updateInfo(item.text(), data.replicas, data.collection)
+            data = glob.irods_session.data_objects.get(
+                posixpath.join(self.path, item.text()))
+            self.detailDock.updateInfo(
+                item.text(), data.replicas, data.collection)
 
     def onDoubleClick(self, item):
         if item.type() == 0:  # selected a folder
