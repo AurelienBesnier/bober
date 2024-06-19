@@ -115,15 +115,19 @@ class Window(MainWindow):
             self.changeFolder()
 
     def detailItem(self, item):
-        if item.type() != 0:
-            print(posixpath.join(self.path, item.text()))
-            meta = glob.irods_session.metadata.get(
-                DataObject, posixpath.join(self.path, item.text()))
-            print(meta)
-            data = glob.irods_session.data_objects.get(
-                posixpath.join(self.path, item.text()))
-            self.detailDock.updateInfo(
-                item.text(), data.replicas, data.collection)
+        try:
+            if item.type() != 0:
+                print(posixpath.join(self.path, item.text()))
+                meta = glob.irods_session.metadata.get(
+                    DataObject, posixpath.join(self.path, item.text()))
+                print(meta)
+                data = glob.irods_session.data_objects.get(
+                    posixpath.join(self.path, item.text()))
+                self.detailDock.updateInfo(
+                    item.text(), data.replicas, data.collection)
+        except AttributeError as e:
+            print(e)
+            pass
 
     def onDoubleClick(self, item):
         if item.type() == 0:  # selected a folder
