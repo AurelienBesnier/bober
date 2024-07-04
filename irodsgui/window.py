@@ -16,7 +16,7 @@ from irodsgui.settings_window import SettingsWindow
 from irodsgui.version import __version__
 
 from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, CAT_NO_ROWS_FOUND, \
-    CAT_NO_ACCESS_PERMISSION
+    CAT_NO_ACCESS_PERMISSION, CollectionDoesNotExist
 from irods.models import DataObject
 
 from threading import Thread
@@ -24,18 +24,19 @@ from threading import Thread
 
 def download_thread(path, download_target, folder):
     try:
-        if not glob.irods_session.data_objects.exists(path):
-            coll = glob.irods_session.collections.get(
-                posixpath.join(path, download_target))
+        irods_path = posixpath.join(path, download_target)
+        if glob.irods_session.collections.exists(irods_path):  # If collection
+            coll = glob.irods_session.collections.get(irods_path)
             for d in coll.data_objects:
                 save_folder = os.path.join(folder, coll.name)
                 os.makedirs(save_folder, exist_ok=True)
                 glob.irods_session.data_objects.get(d.path, save_folder)
         else:
-            glob.irods_session.data_objects.get(
-                posixpath.join(path, download_target), folder)
+            glob.irods_session.data_objects.get(irods_path, folder)
     except CAT_NO_ROWS_FOUND as e:
         print(e)
+    except CollectionDoesNotExist:
+        print(f'{irods_path} does not exist')
 
 
 class Window(MainWindow):
@@ -88,7 +89,7 @@ class Window(MainWindow):
 
         self.setupMenus()
         self.setCentralWidget(self.content)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.detailDock)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.detailDock)
         self.setStatusBarMessage("Application Started", 5000)
 
     def changeFilter(self, pattern):
@@ -128,7 +129,6 @@ class Window(MainWindow):
                     item.text(), data.replicas, data.collection)
         except AttributeError as e:
             print(e)
-            pass
 
     def onDoubleClick(self, item):
         if item.type() == 0:  # selected a folder
@@ -162,7 +162,7 @@ class Window(MainWindow):
     def openFile(self, filepath):
         print(f"opening file {filepath}")
         tmp_folder = os.path.join(
-            str(QStandardPaths.writableLocation(QStandardPaths.TempLocation)),
+            str(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.TempLocation)),
             'irodsgui')
         os.makedirs(tmp_folder, exist_ok=True)
         local_path = os.path.join(tmp_folder, os.path.basename(filepath))
@@ -185,56 +185,56 @@ class Window(MainWindow):
         self.settings_window.show()
 
     def setupMenus(self):
-        quitIcon = self.style().standardIcon(
+        quit_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_BrowserStop)
-        loginIcon = self.style().standardIcon(
+        login_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_ComputerIcon)
-        qtIcon = self.style().standardIcon(
+        qt_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_TitleBarMenuButton)
-        dlIcon = self.style().standardIcon(
+        dl_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_ToolBarVerticalExtensionButton)
         # File Menu
-        fileMenu = QMenu("File", self)
-        quitAction = QAction(quitIcon, "Quit", self)
-        quitAction.triggered.connect(self.close)
-        quitAction.setShortcut(QKeySequence.StandardKey.Quit)
+        file_menu = QMenu("File", self)
+        quit_action = QAction(quit_icon, "Quit", self)
+        quit_action.triggered.connect(self.close)
+        quit_action.setShortcut(QKeySequence.StandardKey.Quit)
 
-        loginAction = QAction(loginIcon, "Login", self)
-        loginAction.triggered.connect(self.login)
-        fileMenu.addAction(loginAction)
-        fileMenu.addSeparator()
-        fileMenu.addAction(quitAction)
+        login_action = QAction(login_icon, "Login", self)
+        login_action.triggered.connect(self.login)
+        file_menu.addAction(login_action)
+        file_menu.addSeparator()
+        file_menu.addAction(quit_action)
 
         # Edit Menu
-        editMenu = QMenu("Edit", self)
-        settingsAction = QAction("Settings...", self)
-        settingsAction.triggered.connect(self.editSettings)
-        editMenu.addAction(settingsAction)
+        edit_menu = QMenu("Edit", self)
+        settings_action = QAction("Settings...", self)
+        settings_action.triggered.connect(self.editSettings)
+        edit_menu.addAction(settings_action)
 
         # About/Help Menu
-        aboutMenu = QMenu("About", self)
-        helpAction = QAction("Help", self)
-        helpAction.triggered.connect(self.help)
-        helpAction.setShortcut(QKeySequence.StandardKey.HelpContents)
-        aboutAction = QAction("About", self)
-        aboutAction.triggered.connect(self.about)
-        aboutQtAction = QAction(qtIcon, "About Qt", self)
-        aboutQtAction.triggered.connect(
+        about_menu = QMenu("About", self)
+        help_action = QAction("Help", self)
+        help_action.triggered.connect(self.help)
+        help_action.setShortcut(QKeySequence.StandardKey.HelpContents)
+        about_action = QAction("About", self)
+        about_action.triggered.connect(self.about)
+        about_qt_action = QAction(qt_icon, "About Qt", self)
+        about_qt_action.triggered.connect(
             lambda: QMessageBox.aboutQt(self, "About Qt"))
-        aboutMenu.addAction(helpAction)
-        aboutMenu.addSeparator()
-        aboutMenu.addAction(aboutAction)
-        aboutMenu.addAction(aboutQtAction)
+        about_menu.addAction(help_action)
+        about_menu.addSeparator()
+        about_menu.addAction(about_action)
+        about_menu.addAction(about_qt_action)
 
         # Download menu
-        downloadAction = QAction(dlIcon, "Download", self)
-        downloadAction.triggered.connect(self.download)
-        self.menu.addAction(downloadAction)
+        download_action = QAction(dl_icon, "Download", self)
+        download_action.triggered.connect(self.download)
+        self.menu.addAction(download_action)
 
         # Add everything
-        self.menubar.addAction(fileMenu.menuAction())
-        self.menubar.addAction(editMenu.menuAction())
-        self.menubar.addAction(aboutMenu.menuAction())
+        self.menubar.addAction(file_menu.menuAction())
+        self.menubar.addAction(edit_menu.menuAction())
+        self.menubar.addAction(about_menu.menuAction())
 
     @staticmethod
     def help():
@@ -242,9 +242,9 @@ class Window(MainWindow):
 
     @staticmethod
     def about():
-        msgBox = QMessageBox()
-        msgBox.setWindowTitle('PhenXFlow - About')
-        msgBox.setText(
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle('PhenXFlow - About')
+        msg_box.setText(
             "<div style='text-align: center'>"
             "<h2>IrodsGui:</h2>"
             "<p>A Simple GUI to irods</p><br>"
@@ -252,16 +252,15 @@ class Window(MainWindow):
             f"<p>Python version: {sys.version}</p>"
             "</div>"
         )
-        msgBox.exec()
+        msg_box.exec()
 
     def download(self):
         doc_folder = str(QStandardPaths.writableLocation(
-            QStandardPaths.DocumentsLocation))
+            QStandardPaths.StandardLocation.DocumentsLocation))
         folder = QFileDialog.getExistingDirectory(self,
                                                   "Save to folder",
                                                   directory=doc_folder,
                                                   options=QFileDialog.Option.ShowDirsOnly)
-        print(folder)
         if folder != "":
             download_targets = self.listWidget.selectedIndexes()
             for idx in download_targets:
