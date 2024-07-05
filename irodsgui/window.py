@@ -1,12 +1,14 @@
 import sys
 import os
 import posixpath
+import traceback
 
-from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
+from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths, QThread, QObject, \
+    Signal
 from qtpy.QtGui import QKeySequence, QDesktopServices
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
-    QToolBar, QPushButton, QFileDialog, QAbstractItemView
+    QToolBar, QPushButton, QFileDialog, QAbstractItemView, QSystemTrayIcon
 
 import irodsgui.globals as glob
 from irodsgui.detail_dock import DetailDock
@@ -19,24 +21,52 @@ from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, CAT_NO_ROWS_FOUND, \
     CAT_NO_ACCESS_PERMISSION, CollectionDoesNotExist
 from irods.models import DataObject
 
-from threading import Thread
+
+class WorkerSignalsMsg(QObject):
+    finished = Signal(name="finished")
+    error = Signal(str, name="error")
+    workerMessage = Signal(str, name="workerMessage")
 
 
-def download_thread(path, download_target, folder):
-    try:
-        irods_path = posixpath.join(path, download_target)
-        if glob.irods_session.collections.exists(irods_path):  # If collection
-            coll = glob.irods_session.collections.get(irods_path)
-            for d in coll.data_objects:
-                save_folder = os.path.join(folder, coll.name)
-                os.makedirs(save_folder, exist_ok=True)
-                glob.irods_session.data_objects.get(d.path, save_folder)
-        else:
-            glob.irods_session.data_objects.get(irods_path, folder)
-    except CAT_NO_ROWS_FOUND as e:
-        print(e)
-    except CollectionDoesNotExist:
-        print(f'{irods_path} does not exist')
+class DownloadThread(QThread):
+    def __init__(self, path, download_target, folder):
+        super(DownloadThread, self).__init__()
+        self.path = path
+        self.download_target = download_target
+        self.folder = folder
+        self.signals = WorkerSignalsMsg()
+        self.running = True
+
+    def run(self) -> None:
+        try:
+            try:
+                irods_path = posixpath.join(self.path, self.download_target)
+                # If collection
+                if glob.irods_session.collections.exists(irods_path):
+                    coll = glob.irods_session.collections.get(irods_path)
+                    for d in coll.data_objects:
+                        save_folder = os.path.join(self.folder, coll.name)
+                        os.makedirs(save_folder, exist_ok=True)
+                        glob.irods_session.data_objects.get(
+                            d.path, save_folder)
+                else:
+                    glob.irods_session.data_objects.get(
+                        irods_path, self.folder)
+                self.signals.workerMessage.emit(irods_path)
+            except CAT_NO_ROWS_FOUND as e:
+                print(e)
+            except CollectionDoesNotExist:
+                print(f'{irods_path} does not exist')
+
+        except Exception as e:
+            print(e, flush=True)
+            self.signals.error.emit(traceback.format_exc())
+        finally:
+            self.signals.finished.emit()
+
+    def quit(self):
+        self.running = False
+        super().quit()
 
 
 class Window(MainWindow):
@@ -77,6 +107,7 @@ class Window(MainWindow):
         self.login_window = LoginWindow()
         self.settings = QSettings()
         self.menu = QMenu(self)
+        self.trayicon = QSystemTrayIcon()
 
         # Vars
         self.root = ""
@@ -86,10 +117,14 @@ class Window(MainWindow):
             QStyle.StandardPixmap.SP_DirIcon)
         self.fileIcon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_FileLinkIcon)
+        self.threads = []
 
+        self.trayicon.setIcon(self.fileIcon)
+        self.trayicon.show()
         self.setupMenus()
         self.setCentralWidget(self.content)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.detailDock)
+        self.addDockWidget(
+            Qt.DockWidgetArea.RightDockWidgetArea, self.detailDock)
         self.setStatusBarMessage("Application Started", 5000)
 
     def changeFilter(self, pattern):
@@ -162,7 +197,8 @@ class Window(MainWindow):
     def openFile(self, filepath):
         print(f"opening file {filepath}")
         tmp_folder = os.path.join(
-            str(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.TempLocation)),
+            str(QStandardPaths.writableLocation(
+                QStandardPaths.StandardLocation.TempLocation)),
             'irodsgui')
         os.makedirs(tmp_folder, exist_ok=True)
         local_path = os.path.join(tmp_folder, os.path.basename(filepath))
@@ -238,6 +274,7 @@ class Window(MainWindow):
 
     @staticmethod
     def help():
+        # TODO: implement help message box
         pass
 
     @staticmethod
@@ -265,11 +302,20 @@ class Window(MainWindow):
             download_targets = self.listWidget.selectedIndexes()
             for idx in download_targets:
                 target = self.listWidget.itemFromIndex(idx)
-                t = Thread(target=download_thread, args=(self.path,
-                                                         target.text(),
-                                                         folder))
-                t.daemon = True
+                t = DownloadThread(self.path,
+                                   target.text(),
+                                   folder)
+                t.signals.workerMessage.connect(self.download_finished)
                 t.start()
+                self.threads.append(t)
+
+    def download_finished(self, msg):
+        print("here")
+        print(msg)
+        print(self.trayicon.supportsMessages())
+        self.trayicon.showMessage(
+            "IrodsGui", f'{msg} downloaded',
+            QSystemTrayIcon.Information, 2000)
 
     def contextMenuEvent(self, a0, QContextMenuEvent=None) -> None:
         self.menu.exec(a0.globalPos())
