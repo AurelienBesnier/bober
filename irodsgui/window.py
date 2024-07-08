@@ -1,10 +1,8 @@
 import sys
 import os
 import posixpath
-import traceback
 
-from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths, QThread, QObject, \
-    Signal
+from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
 from qtpy.QtGui import QKeySequence, QDesktopServices
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
@@ -16,64 +14,12 @@ from irodsgui.progress_dock import ProgressDock
 from irodsgui.login_window import LoginWindow
 from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
+from irodsgui.workers import DownloadThread
 from irodsgui.version import __version__
 
-from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, CAT_NO_ROWS_FOUND, \
-    CAT_NO_ACCESS_PERMISSION, CollectionDoesNotExist
+from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, \
+    CAT_NO_ACCESS_PERMISSION
 from irods.models import DataObject
-
-
-class WorkerSignalsMsg(QObject):
-    finished = Signal(name="finished")
-    error = Signal(str, name="error")
-    delete_bar = Signal(str, name="delete_bar")
-    workerMessage = Signal(str, name="workerMessage")
-
-
-class DownloadThread(QThread):
-    def __init__(self, path, download_target, folder, bar):
-        super(DownloadThread, self).__init__()
-        self.path = path
-        self.download_target = download_target
-        self.folder = folder
-        self.bar = bar
-        self.signals = WorkerSignalsMsg()
-
-    def run(self) -> None:
-        try:
-            try:
-                irods_path = posixpath.join(self.path, self.download_target)
-                # If collection
-                if glob.irods_session.collections.exists(irods_path):
-                    coll = glob.irods_session.collections.get(irods_path)
-                    for d in coll.data_objects:
-                        save_folder = os.path.join(self.folder, coll.name)
-                        os.makedirs(save_folder, exist_ok=True)
-                        glob.irods_session.data_objects.get(
-                            d.path, save_folder)
-                        self.bar.setValue(self.bar.value() + 1)
-                else:
-                    glob.irods_session.data_objects.get(
-                        irods_path, self.folder)
-                    self.bar.setValue(1)
-                self.signals.workerMessage.emit(irods_path)
-
-                self.sleep(2)
-                self.signals.delete_bar.emit(posixpath.basename(irods_path))
-            except CAT_NO_ROWS_FOUND as e:
-                print(e)
-            except CollectionDoesNotExist:
-                print(f'{irods_path} does not exist')
-
-        except Exception as e:
-            print(e, flush=True)
-            self.signals.error.emit(traceback.format_exc())
-        finally:
-            self.signals.finished.emit()
-
-    def quit(self):
-        self.running = False
-        super().quit()
 
 
 class Window(MainWindow):
