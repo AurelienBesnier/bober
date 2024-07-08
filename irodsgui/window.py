@@ -12,6 +12,7 @@ from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
 
 import irodsgui.globals as glob
 from irodsgui.detail_dock import DetailDock
+from irodsgui.progress_dock import ProgressDock
 from irodsgui.login_window import LoginWindow
 from irodsgui.main_window import MainWindow
 from irodsgui.settings_window import SettingsWindow
@@ -25,17 +26,18 @@ from irods.models import DataObject
 class WorkerSignalsMsg(QObject):
     finished = Signal(name="finished")
     error = Signal(str, name="error")
+    delete_bar = Signal(str, name="delete_bar")
     workerMessage = Signal(str, name="workerMessage")
 
 
 class DownloadThread(QThread):
-    def __init__(self, path, download_target, folder):
+    def __init__(self, path, download_target, folder, bar):
         super(DownloadThread, self).__init__()
         self.path = path
         self.download_target = download_target
         self.folder = folder
+        self.bar = bar
         self.signals = WorkerSignalsMsg()
-        self.running = True
 
     def run(self) -> None:
         try:
@@ -49,10 +51,15 @@ class DownloadThread(QThread):
                         os.makedirs(save_folder, exist_ok=True)
                         glob.irods_session.data_objects.get(
                             d.path, save_folder)
+                        self.bar.setValue(self.bar.value() + 1)
                 else:
                     glob.irods_session.data_objects.get(
                         irods_path, self.folder)
+                    self.bar.setValue(1)
                 self.signals.workerMessage.emit(irods_path)
+
+                self.sleep(2)
+                self.signals.delete_bar.emit(posixpath.basename(irods_path))
             except CAT_NO_ROWS_FOUND as e:
                 print(e)
             except CollectionDoesNotExist:
@@ -101,6 +108,7 @@ class Window(MainWindow):
             QAbstractItemView.SelectionMode.ExtendedSelection)
         self.tabWidget.addTab(self.listWidget, "Explorer")
         self.detailDock = DetailDock()
+        self.progressDock = ProgressDock()
 
         # Sub Widgets
         self.settings_window = SettingsWindow(None)
@@ -125,6 +133,8 @@ class Window(MainWindow):
         self.setCentralWidget(self.content)
         self.addDockWidget(
             Qt.DockWidgetArea.RightDockWidgetArea, self.detailDock)
+        self.addDockWidget(
+            Qt.DockWidgetArea.RightDockWidgetArea, self.progressDock)
         self.setStatusBarMessage("Application Started", 5000)
 
     def changeFilter(self, pattern):
@@ -237,6 +247,7 @@ class Window(MainWindow):
 
         login_action = QAction(login_icon, "Login", self)
         login_action.triggered.connect(self.login)
+        login_action.setShortcut(QKeySequence.StandardKey.Open)
         file_menu.addAction(login_action)
         file_menu.addSeparator()
         file_menu.addAction(quit_action)
@@ -302,20 +313,29 @@ class Window(MainWindow):
             download_targets = self.listWidget.selectedIndexes()
             for idx in download_targets:
                 target = self.listWidget.itemFromIndex(idx)
-                t = DownloadThread(self.path,
-                                   target.text(),
-                                   folder)
+
+                irods_path = posixpath.join(self.path, target.text())
+                n = 1
+                if glob.irods_session.collections.exists(irods_path):
+                    coll = glob.irods_session.collections.get(irods_path)
+                    objects = coll.data_objects
+                    n = len(objects) - 1
+                bar = self.progressDock.addDownload(
+                    posixpath.basename(irods_path), n)
+                t = DownloadThread(self.path, target.text(), folder, bar)
                 t.signals.workerMessage.connect(self.download_finished)
+                t.signals.delete_bar.connect(self.delete_bar)
                 t.start()
                 self.threads.append(t)
 
     def download_finished(self, msg):
-        print("here")
-        print(msg)
-        print(self.trayicon.supportsMessages())
         self.trayicon.showMessage(
             "IrodsGui", f'{msg} downloaded',
             QSystemTrayIcon.Information, 2000)
+
+    def delete_bar(self, item):
+        print(f"deleting {item}")
+        self.progressDock.deleteRow(item)
 
     def contextMenuEvent(self, a0, QContextMenuEvent=None) -> None:
         self.menu.exec(a0.globalPos())
