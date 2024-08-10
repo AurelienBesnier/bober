@@ -26,7 +26,13 @@ class LoginWindow(QDialog):
         self.layout.addRow(self.confirmButton)
         self.adjustSize()
 
-    def login(self):
+    def login(self) -> None:
+        """
+        Starts the irods session of python-irodsclient with the information previously given.
+        Returns
+        -------
+        None
+        """
         cfg = self.settings.value('config_path')
         host = self.settings.value('host')
         port = self.settings.value('port')

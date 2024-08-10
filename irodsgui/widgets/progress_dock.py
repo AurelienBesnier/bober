@@ -23,13 +23,37 @@ class ProgressDock(QDockWidget):
         self.setWidget(self.content)
         self.content.show()
 
-    def add_download(self, target, size):
+    def add_download(self, target, size) -> None:
+        """
+        Add a download progression bar for the given target.
+        Parameters
+        ----------
+        target: str
+            The name of the target.
+        size: int
+            The size of the download target in number of files in it.
+
+        Returns
+        -------
+        None
+        """
         bar = QProgressBar()
         bar.setMaximum(size)
         self.layoutProgress.addRow(target, bar)
         return bar
 
-    def delete_row(self, item):
+    def delete_row(self, item) -> None:
+        """
+        Remove an item from the list.
+        Parameters
+        ----------
+        item: str
+            The item's name.
+
+        Returns
+        -------
+        None
+        """
         for i in range(self.layoutProgress.rowCount()):
             try:
                 if self.layoutProgress.itemAt(i, QFormLayout.ItemRole.LabelRole).widget().text() == item:

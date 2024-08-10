@@ -32,7 +32,13 @@ class MainWindow(QMainWindow):
 
         self.move(sr.center() - frame_rect.center())
 
-    def setStatusBarMessage(self, message: str, msecs=0) -> None:
+    def set_status_bar_message(self, message: str, msecs=0) -> None:
+        """
+        Sets a message in the Status bar for the designated amount of time.
+        Returns
+        -------
+        None
+        """
         self.statusbar.showMessage(message, msecs)
 
     @staticmethod

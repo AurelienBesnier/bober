@@ -63,7 +63,7 @@ class Window(MainWindow):
         self.login_window = LoginWindow()
         self.settings = QSettings()
         self.menu = QMenu(self)
-        self.trayicon = QSystemTrayIcon()
+        self.tray_icon = QSystemTrayIcon()
 
         # Vars
         self.root = ""
@@ -75,15 +75,15 @@ class Window(MainWindow):
             QStyle.StandardPixmap.SP_FileLinkIcon)
         self.threads = []
 
-        self.trayicon.setIcon(self.fileIcon)
-        self.trayicon.show()
+        self.tray_icon.setIcon(self.fileIcon)
+        self.tray_icon.show()
         self.setup_menus()
         self.setCentralWidget(self.content)
         self.addDockWidget(
             Qt.DockWidgetArea.RightDockWidgetArea, self.detailDock)
         self.addDockWidget(
             Qt.DockWidgetArea.RightDockWidgetArea, self.progressDock)
-        self.setStatusBarMessage("Application Started", 3000)
+        self.set_status_bar_message("Application Started", 3000)
 
     def change_filter(self, pattern):
         for row in range(self.listWidget.count()):
@@ -104,7 +104,7 @@ class Window(MainWindow):
 
     def login(self):
         if self.login_window.exec() == QDialog.Accepted:
-            self.setStatusBarMessage("logged in", 5000)
+            self.set_status_bar_message("logged in", 5000)
             self.root = self.settings.value('root_path')
             self.path = self.root
             self.change_folder()
@@ -135,7 +135,7 @@ class Window(MainWindow):
             self.open_file(posixpath.join(self.path, item.text()))
 
     def change_folder(self):
-        self.setStatusBarMessage(self.path)
+        self.set_status_bar_message(self.path)
         self.listWidget.clear()
         self.details.clear()
 
@@ -260,6 +260,8 @@ class Window(MainWindow):
                                                   "Save to folder",
                                                   directory=doc_folder,
                                                   options=QFileDialog.Option.ShowDirsOnly)
+        if self.progressDock.isHidden():
+            self.progressDock.show()
         if folder != "":
             download_targets = self.listWidget.selectedIndexes()
             for idx in download_targets:
@@ -280,7 +282,7 @@ class Window(MainWindow):
                 self.threads.append(t)
 
     def download_finished(self, msg):
-        self.trayicon.showMessage(
+        self.tray_icon.showMessage(
             "IrodsGui", f'{msg} downloaded',
             QSystemTrayIcon.Information, 2000)
 
