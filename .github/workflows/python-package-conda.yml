@@ -1,6 +1,10 @@
 name: Python Package using Conda
 
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
 
 
 jobs:
@@ -41,5 +45,5 @@ jobs:
     - name: upload
       uses: actions/upload-artifact@v4
       with:
-        name: irodsgui-build-${{ matrix.os }}-${{ matrix.version }}
+        name: irodsgui-build-${{ matrix.os }}
         path: irodsgui/dist

@@ -31,7 +31,7 @@ class LoginWindow(QDialog):
         host = self.settings.value('host')
         port = self.settings.value('port')
         zone = self.settings.value('zone')
-        SSL_options = {
+        ssl_options = {
             'irods_client_server_policy': 'CS_NEG_REQUIRE',
             'irods_client_server_negotiation': 'request_server_negotiation',
             'irods_ssl_verify_server': 'cert',
@@ -45,7 +45,7 @@ class LoginWindow(QDialog):
                                               password=self.passwordEdit.text(),
                                               host=host, port=port, zone=zone,
                                               env_file=cfg, configure=True,
-                                              **SSL_options)
+                                              **ssl_options)
             print(glob.irods_session.server_version)
         except irods.exception.NetworkException as e:
             print(e)
@@ -71,7 +71,7 @@ class LoginWindow(QDialog):
             msgbox = QMessageBox()
             msgbox.setWindowTitle("Login")
             msgbox.setText(
-                "<p>Invalid authentification.</p>")
+                "<p>Invalid authentication.</p>")
             msgbox.setIcon(QMessageBox.Icon.Warning)
             msgbox.exec()
             return

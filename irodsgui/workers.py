@@ -58,5 +58,4 @@ class DownloadThread(QThread):
             self.signals.finished.emit()
 
     def quit(self):
-        self.running = False
         super().quit()

@@ -3,7 +3,7 @@ import sys
 from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QApplication
 
-from irodsgui.window import Window
+from irodsgui.windows.window import Window
 from irodsgui.version import __version__
 
 

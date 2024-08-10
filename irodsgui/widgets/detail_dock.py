@@ -24,7 +24,7 @@ class DetailDock(QDockWidget):
         self.layoutDetail.addRow("Collection: ", self.coll)
         self.setWidget(self.content)
 
-    def updateInfo(self, filename, replicas, coll):
+    def update_info(self, filename, replicas, coll):
         self.filename.setText(filename)
         self.replicas.setText(";".join([str(s.resource_name) for s in replicas]))
         self.coll.setText(coll.name)
