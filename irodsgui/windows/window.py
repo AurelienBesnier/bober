@@ -6,7 +6,8 @@ from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
 from qtpy.QtGui import QKeySequence, QDesktopServices
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
-    QToolBar, QPushButton, QFileDialog, QAbstractItemView, QSystemTrayIcon
+    QToolBar, QPushButton, QFileDialog, QAbstractItemView, QSystemTrayIcon, \
+    QLabel
 
 import irodsgui.globals as glob
 from irodsgui.widgets.detail_dock import DetailDock
@@ -143,9 +144,9 @@ class Window(MainWindow):
         files = []
         coll = glob.irods_session.collections.get(self.path)
         dirs.extend([QListWidgetItem(self.folderIcon, d.name)
-                    for d in coll.subcollections])
+                     for d in coll.subcollections])
         files.extend([QListWidgetItem(self.fileIcon, f.name, None, 1000)
-                     for f in coll.data_objects])
+                      for f in coll.data_objects])
 
         for directory in dirs:
             self.listWidget.addItem(directory)
@@ -234,15 +235,25 @@ class Window(MainWindow):
         self.menubar.addAction(edit_menu.menuAction())
         self.menubar.addAction(about_menu.menuAction())
 
-    @staticmethod
-    def help():
-        # TODO: implement help message box
-        pass
+    def help(self):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle('IrodsGui - Help')
+        msg_box.setText(
+            "<div style='text-align: center'>"
+            "<h2>Welcome to IrodsGui!</h2>"
+            "<p>Before doing anything, please be sure to update the "
+            "settings of the application. To do this, go to 'Edit'->'Settings'.</p>"
+            "<p>Then, you can login with the login window dialog. Head to 'File'->'Login'</p>"
+            "Once logged in you can enjoy browsing your irods instance like a regular system file explorer. "
+            "You can also download those file be right-clicking and hitting the 'Download' button."
+            "</div>")
+        msg_box.setWindowModality(Qt.NonModal)
+        msg_box.show()
 
     @staticmethod
     def about():
         msg_box = QMessageBox()
-        msg_box.setWindowTitle('PhenXFlow - About')
+        msg_box.setWindowTitle('IrodsGui - About')
         msg_box.setText(
             "<div style='text-align: center'>"
             "<h2>IrodsGui:</h2>"
