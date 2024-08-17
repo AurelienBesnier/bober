@@ -1,26 +1,25 @@
-import sys
 import os
 import posixpath
+import sys
 
+from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, \
+    CAT_NO_ACCESS_PERMISSION
+from irods.models import DataObject
 from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
-from qtpy.QtGui import QKeySequence, QDesktopServices
+from qtpy.QtGui import QKeySequence, QDesktopServices, QIcon
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
-    QToolBar, QPushButton, QFileDialog, QAbstractItemView, QSystemTrayIcon, \
-    QLabel
+    QToolBar, QPushButton, QFileDialog, QAbstractItemView, QSystemTrayIcon
 
 import irodsgui.globals as glob
+from irodsgui.utils import assets_folder, bober_path
+from irodsgui.version import __version__
 from irodsgui.widgets.detail_dock import DetailDock
 from irodsgui.widgets.progress_dock import ProgressDock
 from irodsgui.windows.login_window import LoginWindow
 from irodsgui.windows.main_window import MainWindow
 from irodsgui.windows.settings_window import SettingsWindow
 from irodsgui.workers import DownloadThread
-from irodsgui.version import __version__
-
-from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, \
-    CAT_NO_ACCESS_PERMISSION
-from irods.models import DataObject
 
 
 class Window(MainWindow):
@@ -65,7 +64,6 @@ class Window(MainWindow):
         self.settings = QSettings()
         self.menu = QMenu(self)
         self.tray_icon = QSystemTrayIcon()
-
         # Vars
         self.root = ""
         self.path = ""
@@ -76,7 +74,7 @@ class Window(MainWindow):
             QStyle.StandardPixmap.SP_FileLinkIcon)
         self.threads = []
 
-        self.tray_icon.setIcon(self.file_icon)
+        self.tray_icon.setIcon(QIcon(os.path.join(assets_folder(), 'icon.ico')))
         self.tray_icon.show()
         self.setup_menus()
         self.setCentralWidget(self.content)
@@ -161,7 +159,7 @@ class Window(MainWindow):
         tmp_folder = os.path.join(
             str(QStandardPaths.writableLocation(
                 QStandardPaths.StandardLocation.TempLocation)),
-            'irodsgui')
+            glob.app_name)
         os.makedirs(tmp_folder, exist_ok=True)
         local_path = os.path.join(tmp_folder, os.path.basename(filepath))
         try:
@@ -237,10 +235,10 @@ class Window(MainWindow):
 
     def help(self):
         msg_box = QMessageBox(self)
-        msg_box.setWindowTitle('IrodsGui - Help')
+        msg_box.setWindowTitle(f'{glob.app_name} - Help')
         msg_box.setText(
             "<div style='text-align: center'>"
-            "<h2>Welcome to IrodsGui!</h2>"
+           f"<h2>Welcome to {glob.app_name}!</h2>"
             "<p>Before doing anything, please be sure to update the "
             "settings of the application. To do this, go to 'Edit'->'Settings'.</p>"
             "<p>Then, you can login with the login window dialog. Head to 'File'->'Login'</p>"
@@ -253,13 +251,14 @@ class Window(MainWindow):
     @staticmethod
     def about():
         msg_box = QMessageBox()
-        msg_box.setWindowTitle('IrodsGui - About')
+        msg_box.setWindowTitle(f'{glob.app_name} - About')
         msg_box.setText(
             "<div style='text-align: center'>"
-            "<h2>IrodsGui:</h2>"
-            "<p>A Simple GUI for irods</p><br>"
-            f"<p> version: {__version__}</p>"
-            f"<p>Python version: {sys.version}</p>"
+            f"<h2>{glob.app_name}:</h2>"
+            "<p>A Simple GUI for irods</p>"
+            f"<p><img width='250' height='250' src='{bober_path()}'><p>"
+            f"<p> version: {__version__}<br>"
+            f"Python version: {sys.version}</p>"
             "</div>"
         )
         msg_box.exec()
@@ -294,7 +293,7 @@ class Window(MainWindow):
 
     def download_finished(self, msg):
         self.tray_icon.showMessage(
-            "IrodsGui", f'{msg} downloaded',
+            f"{glob.app_name}", f'{msg} downloaded',
             QSystemTrayIcon.Information, 2000)
 
     def delete_bar(self, item):

@@ -1,4 +1,5 @@
 import json
+import irodsgui.globals as glob
 from qtpy.QtGui import QIntValidator
 from qtpy.QtCore import Qt, QSettings, QStandardPaths
 from qtpy.QtWidgets import QWidget, QGridLayout, QLineEdit, QPushButton, \
@@ -9,7 +10,7 @@ class SettingsWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.settings = QSettings()
-        self.setWindowTitle("IrodsGui - Settings")
+        self.setWindowTitle(f"{glob.app_name} - Settings")
         self.layout = QGridLayout(self)
         self.cfgLabel = QLabel("Config path:")
         self.cfgEdit = QLineEdit()

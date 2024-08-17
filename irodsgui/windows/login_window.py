@@ -12,7 +12,7 @@ class LoginWindow(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setWindowTitle("IrodsGui - Login")
+        self.setWindowTitle(f"{glob.app_name} - Login")
         self.settings = QSettings()
 
         self.layout = QFormLayout(self)
@@ -52,7 +52,6 @@ class LoginWindow(QDialog):
                                               host=host, port=port, zone=zone,
                                               env_file=cfg, configure=True,
                                               **ssl_options)
-            print(glob.irods_session.server_version)
         except irods.exception.NetworkException as e:
             print(e)
             msgbox = QMessageBox()
@@ -81,4 +80,14 @@ class LoginWindow(QDialog):
             msgbox.setIcon(QMessageBox.Icon.Warning)
             msgbox.exec()
             return
+        except TypeError as e:
+            print(e)
+            msgbox = QMessageBox()
+            msgbox.setWindowTitle("Login")
+            msgbox.setText(
+                "<p>Type Error: Did you set the settings correctly ?</p>")
+            msgbox.setIcon(QMessageBox.Icon.Critical)
+            msgbox.exec()
+            return
+
         self.accept()
