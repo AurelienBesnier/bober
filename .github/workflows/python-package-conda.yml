@@ -41,8 +41,14 @@ jobs:
       run: |
         python -m pip install .
         cd irodsgui/
-        pyinstaller main.py --clean --optimize 1 -F -n Bober --collect-all irods --collect-all irodsgui \
-        --exclude-module Pillow -w --icon=./assets/icon.ico
+        pyinstaller main.py --clean \
+        --optimize 1 -F \
+        -n Bober \
+        --collect-all irods --collect-all irodsgui \
+        --exclude-module Pillow -w \
+        --icon=./assets/icon.ico\
+        --add-data=./assets/icon.ico:irodsgui/assets/\
+        --add-data=./assets/bober/bober.png:irodsgui/assets/bober/
     - name: upload
       uses: actions/upload-artifact@v4
       with:
