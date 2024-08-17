@@ -9,22 +9,37 @@ class DetailDock(QDockWidget):
         self.setFeatures(QDockWidget.DockWidgetMovable |
                          QDockWidget.DockWidgetFloatable)
         self.content = QWidget()
-        self.contentLayout = QVBoxLayout(self.content)
-        self.groupDetail = QGroupBox("File Details")
-        self.contentLayout.addWidget(self.groupDetail)
-        self.layoutDetail = QFormLayout(self.groupDetail)
+        self.content_layout = QVBoxLayout(self.content)
+        self.group_detail = QGroupBox("File Details")
+        self.content_layout.addWidget(self.group_detail)
+        self.layout_detail = QFormLayout(self.group_detail)
         self.filename = QLabel(self)
         self.filename.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.replicas = QLabel(self)
         self.replicas.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.coll = QLabel(self)
         self.coll.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.layoutDetail.addRow("File name: ", self.filename)
-        self.layoutDetail.addRow("Replicas: ", self.replicas)
-        self.layoutDetail.addRow("Collection: ", self.coll)
+        self.layout_detail.addRow("File name: ", self.filename)
+        self.layout_detail.addRow("Replicas: ", self.replicas)
+        self.layout_detail.addRow("Collection: ", self.coll)
         self.setWidget(self.content)
 
-    def updateInfo(self, filename, replicas, coll):
+    def update_info(self, filename, replicas, coll) -> None:
+        """
+        Update the information of the detail dock with the selected file.
+        Parameters
+        ----------
+        filename: str
+            The name of the file.
+        replicas: list
+            The replicas where the file can be found.
+        coll: iRODSCollection
+            The collection where the file is.
+
+        Returns
+        -------
+        None
+        """
         self.filename.setText(filename)
         self.replicas.setText(";".join([str(s.resource_name) for s in replicas]))
         self.coll.setText(coll.name)

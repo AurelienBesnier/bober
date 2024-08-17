@@ -1,25 +1,25 @@
-import sys
 import os
 import posixpath
+import sys
 
+from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, \
+    CAT_NO_ACCESS_PERMISSION
+from irods.models import DataObject
 from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
-from qtpy.QtGui import QKeySequence, QDesktopServices
+from qtpy.QtGui import QKeySequence, QDesktopServices, QIcon
 from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
     QToolBar, QPushButton, QFileDialog, QAbstractItemView, QSystemTrayIcon
 
 import irodsgui.globals as glob
-from irodsgui.detail_dock import DetailDock
-from irodsgui.progress_dock import ProgressDock
-from irodsgui.login_window import LoginWindow
-from irodsgui.main_window import MainWindow
-from irodsgui.settings_window import SettingsWindow
-from irodsgui.workers import DownloadThread
+from irodsgui.utils import assets_folder, bober_path
 from irodsgui.version import __version__
-
-from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, \
-    CAT_NO_ACCESS_PERMISSION
-from irods.models import DataObject
+from irodsgui.widgets.detail_dock import DetailDock
+from irodsgui.widgets.progress_dock import ProgressDock
+from irodsgui.windows.login_window import LoginWindow
+from irodsgui.windows.main_window import MainWindow
+from irodsgui.windows.settings_window import SettingsWindow
+from irodsgui.workers import DownloadThread
 
 
 class Window(MainWindow):
@@ -32,60 +32,61 @@ class Window(MainWindow):
 
         # Main Widgets
         self.content = QWidget(self)
-        self.contentLayout = QVBoxLayout(self.content)
+        self.content_layout = QVBoxLayout(self.content)
         self.toolbar = QToolBar(self)
-        self.backButton = QPushButton("Back", self)
-        self.backButton.setIcon(self.style().standardIcon(
+        self.back_button = QPushButton("Back", self)
+        self.back_button.setIcon(self.style().standardIcon(
             QStyle.StandardPixmap.SP_ArrowBack))
-        self.backButton.clicked.connect(self.backFolder)
-        self.searchBar = QLineEdit(self)
-        self.searchBar.setPlaceholderText("Filter...")
-        self.searchBar.textChanged.connect(lambda:
-                                           self.changeFilter(self.searchBar.text()))
-        self.tabWidget = QTabWidget(self)
-        self.toolbar.addWidget(self.backButton)
-        self.toolbar.addWidget(self.searchBar)
-        self.contentLayout.addWidget(self.toolbar)
-        self.contentLayout.addWidget(self.tabWidget)
-        self.listWidget = QListWidget(self)
-        self.listWidget.currentItemChanged.connect(self.detailItem)
-        self.listWidget.itemDoubleClicked.connect(self.onDoubleClick)
-        self.listWidget.setSelectionMode(
+        self.back_button.clicked.connect(self.back_folder)
+        self.search_bar = QLineEdit(self)
+        self.search_bar.setPlaceholderText("Filter...")
+        self.search_bar.textChanged.connect(lambda:
+                                           self.change_filter(self.search_bar.text()))
+        self.tab_widget = QTabWidget(self)
+        self.toolbar.addWidget(self.back_button)
+        self.toolbar.addWidget(self.search_bar)
+        self.content_layout.addWidget(self.toolbar)
+        self.content_layout.addWidget(self.tab_widget)
+        self.list_widget = QListWidget(self)
+        self.list_widget.currentItemChanged.connect(self.detail_item)
+        self.list_widget.itemDoubleClicked.connect(self.on_double_click)
+        self.list_widget.setSelectionMode(
             QAbstractItemView.SelectionMode.ExtendedSelection)
-        self.tabWidget.addTab(self.listWidget, "Explorer")
-        self.detailDock = DetailDock()
-        self.progressDock = ProgressDock()
+        self.tab_widget.addTab(self.list_widget, "Explorer")
+        self.detail_dock = DetailDock()
+        self.detail_dock.hide()
+        self.progress_dock = ProgressDock()
+        self.progress_dock.hide()
 
         # Sub Widgets
         self.settings_window = SettingsWindow(None)
         self.login_window = LoginWindow()
         self.settings = QSettings()
         self.menu = QMenu(self)
-        self.trayicon = QSystemTrayIcon()
-
+        self.tray_icon = QSystemTrayIcon()
         # Vars
         self.root = ""
         self.path = ""
         self.details = []
-        self.folderIcon = self.style().standardIcon(
+        self.folder_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_DirIcon)
-        self.fileIcon = self.style().standardIcon(
+        self.file_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_FileLinkIcon)
         self.threads = []
 
-        self.trayicon.setIcon(self.fileIcon)
-        self.trayicon.show()
-        self.setupMenus()
+        self.tray_icon.setIcon(QIcon(os.path.join(assets_folder(), 'icon.ico')))
+        self.tray_icon.show()
+        self.setup_menus()
         self.setCentralWidget(self.content)
         self.addDockWidget(
-            Qt.DockWidgetArea.RightDockWidgetArea, self.detailDock)
+            Qt.DockWidgetArea.RightDockWidgetArea, self.detail_dock)
         self.addDockWidget(
-            Qt.DockWidgetArea.RightDockWidgetArea, self.progressDock)
-        self.setStatusBarMessage("Application Started", 5000)
+            Qt.DockWidgetArea.RightDockWidgetArea, self.progress_dock)
+        self.set_status_bar_message("Application Started", 3000)
 
-    def changeFilter(self, pattern):
-        for row in range(self.listWidget.count()):
-            it = self.listWidget.item(row)
+    def change_filter(self, pattern):
+        for row in range(self.list_widget.count()):
+            it = self.list_widget.item(row)
             if pattern:
                 it.setHidden(not self.filter(pattern, it.text()))
             else:
@@ -95,67 +96,70 @@ class Window(MainWindow):
     def filter(text, keywords):
         return text in keywords
 
-    def backFolder(self):
+    def back_folder(self):
         if self.path:
             self.path = posixpath.dirname(self.path)
-            self.changeFolder()
+            self.change_folder()
 
     def login(self):
         if self.login_window.exec() == QDialog.Accepted:
-            self.setStatusBarMessage("logged in", 5000)
+            self.set_status_bar_message("logged in", 5000)
             self.root = self.settings.value('root_path')
             self.path = self.root
-            self.changeFolder()
+            self.change_folder()
 
-    def detailItem(self, item):
+    def detail_item(self, item):
         try:
             if item.type() != 0:
+                if self.detail_dock.isHidden():
+                    self.detail_dock.show()
                 print(posixpath.join(self.path, item.text()))
                 meta = glob.irods_session.metadata.get(
                     DataObject, posixpath.join(self.path, item.text()))
                 print(meta)
                 data = glob.irods_session.data_objects.get(
                     posixpath.join(self.path, item.text()))
-                self.detailDock.updateInfo(
+                self.detail_dock.update_info(
                     item.text(), data.replicas, data.collection)
         except AttributeError as e:
             print(e)
 
-    def onDoubleClick(self, item):
+    def on_double_click(self, item):
         if item.type() == 0:  # selected a folder
             self.path = posixpath.join(self.path, item.text())
             self.path = posixpath.normpath(self.path)
-            self.changeFolder()
+            self.change_folder()
         else:  # selected a file
             # open file
-            self.openFile(posixpath.join(self.path, item.text()))
+            self.open_file(posixpath.join(self.path, item.text()))
 
-    def changeFolder(self):
-        self.setStatusBarMessage(self.path)
-        self.listWidget.clear()
+    def change_folder(self):
+        self.set_status_bar_message(self.path)
+        self.list_widget.clear()
         self.details.clear()
 
-        dirs = [QListWidgetItem(self.folderIcon, '..')]
+        dirs = [QListWidgetItem(self.folder_icon, '..')]
         files = []
         coll = glob.irods_session.collections.get(self.path)
-        dirs.extend([QListWidgetItem(self.folderIcon, d.name)
-                    for d in coll.subcollections])
-        files.extend([QListWidgetItem(self.fileIcon, f.name, None, 1000)
-                     for f in coll.data_objects])
+        dirs.extend([QListWidgetItem(self.folder_icon, d.name)
+                     for d in coll.subcollections])
+        files.extend([QListWidgetItem(self.file_icon, f.name, None, 1000)
+                      for f in coll.data_objects])
 
         for directory in dirs:
-            self.listWidget.addItem(directory)
+            self.list_widget.addItem(directory)
         for file in files:
-            self.listWidget.addItem(file)
+            self.list_widget.addItem(file)
 
-        self.listWidget.sortItems()
+        self.list_widget.sortItems()
 
-    def openFile(self, filepath):
+    @staticmethod
+    def open_file(filepath):
         print(f"opening file {filepath}")
         tmp_folder = os.path.join(
             str(QStandardPaths.writableLocation(
                 QStandardPaths.StandardLocation.TempLocation)),
-            'irodsgui')
+            glob.app_name)
         os.makedirs(tmp_folder, exist_ok=True)
         local_path = os.path.join(tmp_folder, os.path.basename(filepath))
         try:
@@ -173,10 +177,10 @@ class Window(MainWindow):
             return
         QDesktopServices.openUrl(QUrl.fromLocalFile(local_path))
 
-    def editSettings(self):
+    def edit_settings(self):
         self.settings_window.show()
 
-    def setupMenus(self):
+    def setup_menus(self):
         quit_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_BrowserStop)
         login_icon = self.style().standardIcon(
@@ -201,7 +205,7 @@ class Window(MainWindow):
         # Edit Menu
         edit_menu = QMenu("Edit", self)
         settings_action = QAction("Settings...", self)
-        settings_action.triggered.connect(self.editSettings)
+        settings_action.triggered.connect(self.edit_settings)
         edit_menu.addAction(settings_action)
 
         # About/Help Menu
@@ -229,21 +233,32 @@ class Window(MainWindow):
         self.menubar.addAction(edit_menu.menuAction())
         self.menubar.addAction(about_menu.menuAction())
 
-    @staticmethod
-    def help():
-        # TODO: implement help message box
-        pass
+    def help(self):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(f'{glob.app_name} - Help')
+        msg_box.setText(
+            "<div style='text-align: center'>"
+           f"<h2>Welcome to {glob.app_name}!</h2>"
+            "<p>Before doing anything, please be sure to update the "
+            "settings of the application. To do this, go to 'Edit'->'Settings'.</p>"
+            "<p>Then, you can login with the login window dialog. Head to 'File'->'Login'</p>"
+            "Once logged in you can enjoy browsing your irods instance like a regular system file explorer. "
+            "You can also download those file be right-clicking and hitting the 'Download' button."
+            "</div>")
+        msg_box.setWindowModality(Qt.NonModal)
+        msg_box.show()
 
     @staticmethod
     def about():
         msg_box = QMessageBox()
-        msg_box.setWindowTitle('PhenXFlow - About')
+        msg_box.setWindowTitle(f'{glob.app_name} - About')
         msg_box.setText(
             "<div style='text-align: center'>"
-            "<h2>IrodsGui:</h2>"
-            "<p>A Simple GUI to irods</p><br>"
-            f"<p> version: {__version__}</p>"
-            f"<p>Python version: {sys.version}</p>"
+            f"<h2>{glob.app_name}:</h2>"
+            "<p>A Simple GUI for irods</p>"
+            f"<p><img width='250' height='250' src='{bober_path()}'><p>"
+            f"<p> version: {__version__}<br>"
+            f"Python version: {sys.version}</p>"
             "</div>"
         )
         msg_box.exec()
@@ -255,10 +270,12 @@ class Window(MainWindow):
                                                   "Save to folder",
                                                   directory=doc_folder,
                                                   options=QFileDialog.Option.ShowDirsOnly)
+        if self.progress_dock.isHidden():
+            self.progress_dock.show()
         if folder != "":
-            download_targets = self.listWidget.selectedIndexes()
+            download_targets = self.list_widget.selectedIndexes()
             for idx in download_targets:
-                target = self.listWidget.itemFromIndex(idx)
+                target = self.list_widget.itemFromIndex(idx)
 
                 irods_path = posixpath.join(self.path, target.text())
                 n = 1
@@ -266,7 +283,7 @@ class Window(MainWindow):
                     coll = glob.irods_session.collections.get(irods_path)
                     objects = coll.data_objects
                     n = len(objects) - 1
-                bar = self.progressDock.addDownload(
+                bar = self.progress_dock.add_download(
                     posixpath.basename(irods_path), n)
                 t = DownloadThread(self.path, target.text(), folder, bar)
                 t.signals.workerMessage.connect(self.download_finished)
@@ -275,13 +292,12 @@ class Window(MainWindow):
                 self.threads.append(t)
 
     def download_finished(self, msg):
-        self.trayicon.showMessage(
-            "IrodsGui", f'{msg} downloaded',
+        self.tray_icon.showMessage(
+            f"{glob.app_name}", f'{msg} downloaded',
             QSystemTrayIcon.Information, 2000)
 
     def delete_bar(self, item):
-        print(f"deleting {item}")
-        self.progressDock.deleteRow(item)
+        self.progress_dock.delete_row(item)
 
     def contextMenuEvent(self, a0, QContextMenuEvent=None) -> None:
         self.menu.exec(a0.globalPos())

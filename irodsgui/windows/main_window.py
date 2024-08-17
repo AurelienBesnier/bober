@@ -24,15 +24,21 @@ class MainWindow(QMainWindow):
         None
         """
         # Get the screen where the mouse is
-        globalMousePos = QCursor.pos()
-        mouseScreen = QGuiApplication.screenAt(globalMousePos)
+        global_mouse_pos = QCursor.pos()
+        mouse_screen = QGuiApplication.screenAt(global_mouse_pos)
 
-        sr = QScreen.availableGeometry(mouseScreen)
-        frameRect = QRect(QPoint(), self.frameSize().boundedTo(sr.size()))
+        sr = QScreen.availableGeometry(mouse_screen)
+        frame_rect = QRect(QPoint(), self.frameSize().boundedTo(sr.size()))
 
-        self.move(sr.center() - frameRect.center())
+        self.move(sr.center() - frame_rect.center())
 
-    def setStatusBarMessage(self, message: str, msecs=0) -> None:
+    def set_status_bar_message(self, message: str, msecs=0) -> None:
+        """
+        Sets a message in the Status bar for the designated amount of time.
+        Returns
+        -------
+        None
+        """
         self.statusbar.showMessage(message, msecs)
 
     @staticmethod

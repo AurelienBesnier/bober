@@ -1,15 +1,16 @@
+import json
+import irodsgui.globals as glob
 from qtpy.QtGui import QIntValidator
 from qtpy.QtCore import Qt, QSettings, QStandardPaths
 from qtpy.QtWidgets import QWidget, QGridLayout, QLineEdit, QPushButton, \
     QLabel, QFileDialog
-import json
 
 
 class SettingsWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.settings = QSettings()
-        self.setWindowTitle("IrodsGui - Settings")
+        self.setWindowTitle(f"{glob.app_name} - Settings")
         self.layout = QGridLayout(self)
         self.cfgLabel = QLabel("Config path:")
         self.cfgEdit = QLineEdit()
@@ -32,7 +33,7 @@ class SettingsWindow(QWidget):
 
         self.cfgEdit.setText(self.config_location)
         self.cfgButton = QPushButton("...")
-        self.cfgButton.clicked.connect(self.selectCfg)
+        self.cfgButton.clicked.connect(self.select_cfg)
 
         self.hostEdit.setText(self.host)
         self.portEdit.setText(self.port)
@@ -65,7 +66,10 @@ class SettingsWindow(QWidget):
         self.layout.addWidget(self.saveButton, 5, 0)
         self.layout.addWidget(self.cancelButton, 5, 1, 1, 2)
 
-    def selectCfg(self):
+    def select_cfg(self) -> None:
+        """
+        Select the irods configuration file and parse it.
+        """
         home_folder = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.HomeLocation)
         print(home_folder)
@@ -79,11 +83,13 @@ class SettingsWindow(QWidget):
 
         if self.config_location == "":
             return
-        else:
-            self.cfgEdit.setText(self.config_location)
-            self.parseConfig()
+        self.cfgEdit.setText(self.config_location)
+        self.parse_config()
 
-    def parseConfig(self):
+    def parse_config(self) -> None:
+        """
+        Parse the configuration file and set the line edits with the info in it.
+        """
         with open(self.config_location, 'r') as f:
             data = json.load(f)
             self.port = data['irods_port']
@@ -96,7 +102,13 @@ class SettingsWindow(QWidget):
             self.zoneEdit.setText(self.zone)
             self.rootEdit.setText(self.rootPath)
 
-    def save(self):
+    def save(self) -> None:
+        """
+        Sets the Qt application settings values to the values of the line edits.
+        Returns
+        -------
+        None
+        """
         self.settings.setValue("config_path", self.config_location)
         self.settings.setValue("port", self.portEdit.text())
         self.settings.setValue("host", self.hostEdit.text())
