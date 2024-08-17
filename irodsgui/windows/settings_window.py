@@ -1,8 +1,8 @@
+import json
 from qtpy.QtGui import QIntValidator
 from qtpy.QtCore import Qt, QSettings, QStandardPaths
 from qtpy.QtWidgets import QWidget, QGridLayout, QLineEdit, QPushButton, \
     QLabel, QFileDialog
-import json
 
 
 class SettingsWindow(QWidget):
@@ -82,9 +82,8 @@ class SettingsWindow(QWidget):
 
         if self.config_location == "":
             return
-        else:
-            self.cfgEdit.setText(self.config_location)
-            self.parse_config()
+        self.cfgEdit.setText(self.config_location)
+        self.parse_config()
 
     def parse_config(self) -> None:
         """

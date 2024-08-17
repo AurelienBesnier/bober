@@ -8,17 +8,17 @@ class ProgressDock(QDockWidget):
         self.setFeatures(QDockWidget.DockWidgetMovable |
                          QDockWidget.DockWidgetFloatable)
         self.content = QWidget()
-        self.scrollArea = QScrollArea()
-        self.contentLayout = QVBoxLayout(self.content)
+        self.scroll_area = QScrollArea()
+        self.content_layout = QVBoxLayout(self.content)
 
-        self.groupWdg = QWidget()
-        self.layoutProgress = QFormLayout(self.groupWdg)
-        self.scrollArea.setWidget(self.groupWdg)
-        self.scrollArea.setWidgetResizable(True)
+        self.group_wdg = QWidget()
+        self.layout_progress = QFormLayout(self.group_wdg)
+        self.scroll_area.setWidget(self.group_wdg)
+        self.scroll_area.setWidgetResizable(True)
         # self.groupWdg.resize(500, 100)
 
-        self.contentLayout.addWidget(QLabel("Download progress"))
-        self.contentLayout.addWidget(self.scrollArea)
+        self.content_layout.addWidget(QLabel("Download progress"))
+        self.content_layout.addWidget(self.scroll_area)
 
         self.setWidget(self.content)
         self.content.show()
@@ -39,7 +39,7 @@ class ProgressDock(QDockWidget):
         """
         bar = QProgressBar()
         bar.setMaximum(size)
-        self.layoutProgress.addRow(target, bar)
+        self.layout_progress.addRow(target, bar)
         return bar
 
     def delete_row(self, item) -> None:
@@ -54,9 +54,9 @@ class ProgressDock(QDockWidget):
         -------
         None
         """
-        for i in range(self.layoutProgress.rowCount()):
+        for i in range(self.layout_progress.rowCount()):
             try:
-                if self.layoutProgress.itemAt(i, QFormLayout.ItemRole.LabelRole).widget().text() == item:
-                    self.layoutProgress.removeRow(i)
+                if self.layout_progress.itemAt(i, QFormLayout.ItemRole.LabelRole).widget().text() == item:
+                    self.layout_progress.removeRow(i)
             except AttributeError:
                 pass

@@ -33,31 +33,31 @@ class Window(MainWindow):
 
         # Main Widgets
         self.content = QWidget(self)
-        self.contentLayout = QVBoxLayout(self.content)
+        self.content_layout = QVBoxLayout(self.content)
         self.toolbar = QToolBar(self)
-        self.backButton = QPushButton("Back", self)
-        self.backButton.setIcon(self.style().standardIcon(
+        self.back_button = QPushButton("Back", self)
+        self.back_button.setIcon(self.style().standardIcon(
             QStyle.StandardPixmap.SP_ArrowBack))
-        self.backButton.clicked.connect(self.back_folder)
-        self.searchBar = QLineEdit(self)
-        self.searchBar.setPlaceholderText("Filter...")
-        self.searchBar.textChanged.connect(lambda:
-                                           self.change_filter(self.searchBar.text()))
-        self.tabWidget = QTabWidget(self)
-        self.toolbar.addWidget(self.backButton)
-        self.toolbar.addWidget(self.searchBar)
-        self.contentLayout.addWidget(self.toolbar)
-        self.contentLayout.addWidget(self.tabWidget)
-        self.listWidget = QListWidget(self)
-        self.listWidget.currentItemChanged.connect(self.detail_item)
-        self.listWidget.itemDoubleClicked.connect(self.on_double_click)
-        self.listWidget.setSelectionMode(
+        self.back_button.clicked.connect(self.back_folder)
+        self.search_bar = QLineEdit(self)
+        self.search_bar.setPlaceholderText("Filter...")
+        self.search_bar.textChanged.connect(lambda:
+                                           self.change_filter(self.search_bar.text()))
+        self.tab_widget = QTabWidget(self)
+        self.toolbar.addWidget(self.back_button)
+        self.toolbar.addWidget(self.search_bar)
+        self.content_layout.addWidget(self.toolbar)
+        self.content_layout.addWidget(self.tab_widget)
+        self.list_widget = QListWidget(self)
+        self.list_widget.currentItemChanged.connect(self.detail_item)
+        self.list_widget.itemDoubleClicked.connect(self.on_double_click)
+        self.list_widget.setSelectionMode(
             QAbstractItemView.SelectionMode.ExtendedSelection)
-        self.tabWidget.addTab(self.listWidget, "Explorer")
-        self.detailDock = DetailDock()
-        self.detailDock.hide()
-        self.progressDock = ProgressDock()
-        self.progressDock.hide()
+        self.tab_widget.addTab(self.list_widget, "Explorer")
+        self.detail_dock = DetailDock()
+        self.detail_dock.hide()
+        self.progress_dock = ProgressDock()
+        self.progress_dock.hide()
 
         # Sub Widgets
         self.settings_window = SettingsWindow(None)
@@ -70,25 +70,25 @@ class Window(MainWindow):
         self.root = ""
         self.path = ""
         self.details = []
-        self.folderIcon = self.style().standardIcon(
+        self.folder_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_DirIcon)
-        self.fileIcon = self.style().standardIcon(
+        self.file_icon = self.style().standardIcon(
             QStyle.StandardPixmap.SP_FileLinkIcon)
         self.threads = []
 
-        self.tray_icon.setIcon(self.fileIcon)
+        self.tray_icon.setIcon(self.file_icon)
         self.tray_icon.show()
         self.setup_menus()
         self.setCentralWidget(self.content)
         self.addDockWidget(
-            Qt.DockWidgetArea.RightDockWidgetArea, self.detailDock)
+            Qt.DockWidgetArea.RightDockWidgetArea, self.detail_dock)
         self.addDockWidget(
-            Qt.DockWidgetArea.RightDockWidgetArea, self.progressDock)
+            Qt.DockWidgetArea.RightDockWidgetArea, self.progress_dock)
         self.set_status_bar_message("Application Started", 3000)
 
     def change_filter(self, pattern):
-        for row in range(self.listWidget.count()):
-            it = self.listWidget.item(row)
+        for row in range(self.list_widget.count()):
+            it = self.list_widget.item(row)
             if pattern:
                 it.setHidden(not self.filter(pattern, it.text()))
             else:
@@ -113,15 +113,15 @@ class Window(MainWindow):
     def detail_item(self, item):
         try:
             if item.type() != 0:
-                if self.detailDock.isHidden():
-                    self.detailDock.show()
+                if self.detail_dock.isHidden():
+                    self.detail_dock.show()
                 print(posixpath.join(self.path, item.text()))
                 meta = glob.irods_session.metadata.get(
                     DataObject, posixpath.join(self.path, item.text()))
                 print(meta)
                 data = glob.irods_session.data_objects.get(
                     posixpath.join(self.path, item.text()))
-                self.detailDock.update_info(
+                self.detail_dock.update_info(
                     item.text(), data.replicas, data.collection)
         except AttributeError as e:
             print(e)
@@ -137,23 +137,23 @@ class Window(MainWindow):
 
     def change_folder(self):
         self.set_status_bar_message(self.path)
-        self.listWidget.clear()
+        self.list_widget.clear()
         self.details.clear()
 
-        dirs = [QListWidgetItem(self.folderIcon, '..')]
+        dirs = [QListWidgetItem(self.folder_icon, '..')]
         files = []
         coll = glob.irods_session.collections.get(self.path)
-        dirs.extend([QListWidgetItem(self.folderIcon, d.name)
+        dirs.extend([QListWidgetItem(self.folder_icon, d.name)
                      for d in coll.subcollections])
-        files.extend([QListWidgetItem(self.fileIcon, f.name, None, 1000)
+        files.extend([QListWidgetItem(self.file_icon, f.name, None, 1000)
                       for f in coll.data_objects])
 
         for directory in dirs:
-            self.listWidget.addItem(directory)
+            self.list_widget.addItem(directory)
         for file in files:
-            self.listWidget.addItem(file)
+            self.list_widget.addItem(file)
 
-        self.listWidget.sortItems()
+        self.list_widget.sortItems()
 
     @staticmethod
     def open_file(filepath):
@@ -271,12 +271,12 @@ class Window(MainWindow):
                                                   "Save to folder",
                                                   directory=doc_folder,
                                                   options=QFileDialog.Option.ShowDirsOnly)
-        if self.progressDock.isHidden():
-            self.progressDock.show()
+        if self.progress_dock.isHidden():
+            self.progress_dock.show()
         if folder != "":
-            download_targets = self.listWidget.selectedIndexes()
+            download_targets = self.list_widget.selectedIndexes()
             for idx in download_targets:
-                target = self.listWidget.itemFromIndex(idx)
+                target = self.list_widget.itemFromIndex(idx)
 
                 irods_path = posixpath.join(self.path, target.text())
                 n = 1
@@ -284,7 +284,7 @@ class Window(MainWindow):
                     coll = glob.irods_session.collections.get(irods_path)
                     objects = coll.data_objects
                     n = len(objects) - 1
-                bar = self.progressDock.add_download(
+                bar = self.progress_dock.add_download(
                     posixpath.basename(irods_path), n)
                 t = DownloadThread(self.path, target.text(), folder, bar)
                 t.signals.workerMessage.connect(self.download_finished)
@@ -298,8 +298,7 @@ class Window(MainWindow):
             QSystemTrayIcon.Information, 2000)
 
     def delete_bar(self, item):
-        print(f"deleting {item}")
-        self.progressDock.delete_row(item)
+        self.progress_dock.delete_row(item)
 
     def contextMenuEvent(self, a0, QContextMenuEvent=None) -> None:
         self.menu.exec(a0.globalPos())
