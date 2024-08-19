@@ -259,6 +259,7 @@ class Window(MainWindow):
             f"<p><img width='250' height='250' src='{bober_path()}'><p>"
             f"<p> version: {__version__}<br>"
             f"Python version: {sys.version}</p>"
+            "<p><a href='https://github.com/AurelienBesnier/irods-gui'>Github</a></p>"
             "</div>"
         )
         msg_box.exec()
