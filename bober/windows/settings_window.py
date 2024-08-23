@@ -1,5 +1,5 @@
 import json
-import irodsgui.globals as glob
+import bober.globals as glob
 from qtpy.QtGui import QIntValidator
 from qtpy.QtCore import Qt, QSettings, QStandardPaths
 from qtpy.QtWidgets import QWidget, QGridLayout, QLineEdit, QPushButton, \

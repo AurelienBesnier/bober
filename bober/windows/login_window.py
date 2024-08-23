@@ -5,7 +5,7 @@ from qtpy.QtCore import QSettings
 import irods
 from irods.session import iRODSSession
 
-import irodsgui.globals as glob
+import bober.globals as glob
 
 
 class LoginWindow(QDialog):

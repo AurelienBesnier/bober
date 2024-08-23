@@ -1,15 +1,15 @@
 import os
 import sys
 
-import irodsgui.globals as glob
+import bober.globals as glob
 
 from qtpy.QtGui import QIcon
 from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QApplication
 
-from irodsgui.utils import assets_folder
-from irodsgui.windows.window import Window
-from irodsgui.version import __version__
+from bober.utils import assets_folder
+from bober.windows.window import Window
+from bober.version import __version__
 
 
 def quit_application():

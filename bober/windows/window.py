@@ -11,15 +11,15 @@ from qtpy.QtWidgets import QAction, QMenu, QStyle, QTabWidget, QListWidget, \
     QMessageBox, QDialog, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, \
     QToolBar, QPushButton, QFileDialog, QAbstractItemView, QSystemTrayIcon
 
-import irodsgui.globals as glob
-from irodsgui.utils import assets_folder, bober_path
-from irodsgui.version import __version__
-from irodsgui.widgets.detail_dock import DetailDock
-from irodsgui.widgets.progress_dock import ProgressDock
-from irodsgui.windows.login_window import LoginWindow
-from irodsgui.windows.main_window import MainWindow
-from irodsgui.windows.settings_window import SettingsWindow
-from irodsgui.workers import DownloadThread
+import bober.globals as glob
+from bober.utils import assets_folder, bober_path
+from bober.version import __version__
+from bober.widgets.detail_dock import DetailDock
+from bober.widgets.progress_dock import ProgressDock
+from bober.windows.login_window import LoginWindow
+from bober.windows.main_window import MainWindow
+from bober.windows.settings_window import SettingsWindow
+from bober.workers import DownloadThread
 
 
 class Window(MainWindow):

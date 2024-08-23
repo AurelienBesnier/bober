@@ -4,7 +4,7 @@ import posixpath
 
 from qtpy.QtCore import QObject, Signal, QThread
 
-import irodsgui.globals as glob
+import bober.globals as glob
 
 from irods.exception import CAT_NO_ROWS_FOUND, CollectionDoesNotExist
 
