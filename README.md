@@ -1,4 +1,4 @@
-# irods-gui
+# Бобер
 Cross platform iRODS gui
 
 # Dependencies
