@@ -2,6 +2,7 @@ import os
 import traceback
 import posixpath
 
+from qtpy.QtWidgets import QListWidgetItem
 from qtpy.QtCore import QObject, Signal, QThread
 
 import bober.globals as glob
@@ -15,6 +16,35 @@ class WorkerSignalsMsg(QObject):
     delete_bar = Signal(str, name="delete_bar")
     workerMessage = Signal(str, name="workerMessage")
 
+
+class ChangeFolderThread(QThread):
+    def __init__(self, list_widget, path, folder_icon, file_icon):
+        super(ChangeFolderThread, self).__init__()
+        self.list_widget = list_widget
+        self.path = path
+        self.folder_icon = folder_icon
+        self.file_icon = file_icon
+
+    def run(self):
+        dirs = [QListWidgetItem(self.folder_icon, "..")]
+        files = []
+        coll = glob.irods_session.collections.get(self.path)
+        dirs.extend(
+            [QListWidgetItem(self.folder_icon, d.name) for d in coll.subcollections]
+        )
+        files.extend(
+            [
+                QListWidgetItem(self.file_icon, f.name, None, 1000)
+                for f in coll.data_objects
+            ]
+        )
+
+        for directory in dirs:
+            self.list_widget.addItem(directory)
+        for file in files:
+            self.list_widget.addItem(file)
+
+        self.list_widget.sortItems()
 
 class DownloadThread(QThread):
     def __init__(self, path, download_target, folder, bar):
@@ -35,19 +65,17 @@ class DownloadThread(QThread):
                     for d in coll.data_objects:
                         save_folder = os.path.join(self.folder, coll.name)
                         os.makedirs(save_folder, exist_ok=True)
-                        glob.irods_session.data_objects.get(
-                            d.path, save_folder)
+                        glob.irods_session.data_objects.get(d.path, save_folder)
                         self.bar.setValue(self.bar.value() + 1)
                 else:
-                    glob.irods_session.data_objects.get(
-                        irods_path, self.folder)
+                    glob.irods_session.data_objects.get(irods_path, self.folder)
                     self.bar.setValue(1)
                 self.signals.workerMessage.emit(irods_path)
 
             except CAT_NO_ROWS_FOUND as e:
                 print(e)
             except CollectionDoesNotExist:
-                print(f'{irods_path} does not exist')
+                print(f"{irods_path} does not exist")
 
         except Exception as e:
             print(e, flush=True)
@@ -56,6 +84,3 @@ class DownloadThread(QThread):
             self.sleep(2)
             self.signals.delete_bar.emit(posixpath.basename(irods_path))
             self.signals.finished.emit()
-
-    def quit(self):
-        super().quit()

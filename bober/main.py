@@ -19,7 +19,7 @@ def quit_application():
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(os.path.join(assets_folder(), 'icon.ico')))
+    app.setWindowIcon(QIcon(os.path.join(assets_folder(), "icon.ico")))
     app.setOrganizationName(glob.app_name)
     app.setApplicationName(glob.app_name)
     app.setApplicationVersion(__version__)
