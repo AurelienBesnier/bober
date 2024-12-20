@@ -1,11 +1,11 @@
 from qtpy.QtWidgets import (
-    QWidget,
     QDockWidget,
     QFormLayout,
-    QVBoxLayout,
+    QLabel,
     QProgressBar,
     QScrollArea,
-    QLabel,
+    QVBoxLayout,
+    QWidget,
 )
 
 
@@ -31,9 +31,9 @@ class ProgressDock(QDockWidget):
         self.setWidget(self.content)
         self.content.show()
 
-    def add_download(self, target, size) -> None:
+    def add_download(self, target, size) -> QProgressBar:
         """
-        Add a download progression bar for the given target.
+        Add a download progression progress_bar for the given target.
         Parameters
         ----------
         target: str
@@ -45,10 +45,10 @@ class ProgressDock(QDockWidget):
         -------
         None
         """
-        bar = QProgressBar()
-        bar.setMaximum(size)
-        self.layout_progress.addRow(target, bar)
-        return bar
+        progress_bar = QProgressBar()
+        progress_bar.setMaximum(size)
+        self.layout_progress.addRow(target, progress_bar)
+        return progress_bar
 
     def delete_row(self, item) -> None:
         """

@@ -2,27 +2,26 @@ import os
 import posixpath
 import sys
 
-from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, CAT_NO_ACCESS_PERMISSION
+from irods.exception import CAT_NO_ACCESS_PERMISSION, OVERWRITE_WITHOUT_FORCE_FLAG
 from irods.models import DataObject
-from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
-from qtpy.QtGui import QKeySequence, QDesktopServices, QIcon
+from qtpy.QtCore import QSettings, QStandardPaths, Qt, QUrl
+from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence
 from qtpy.QtWidgets import (
-    QAction,
-    QMenu,
-    QStyle,
-    QTabWidget,
-    QListWidget,
-    QMessageBox,
-    QDialog,
-    QListWidgetItem,
-    QWidget,
-    QVBoxLayout,
-    QLineEdit,
-    QToolBar,
-    QPushButton,
-    QFileDialog,
     QAbstractItemView,
+    QAction,
+    QDialog,
+    QFileDialog,
+    QLineEdit,
+    QListWidget,
+    QMenu,
+    QMessageBox,
+    QPushButton,
+    QStyle,
     QSystemTrayIcon,
+    QTabWidget,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
 )
 
 import bober.globals as glob
@@ -33,7 +32,7 @@ from bober.widgets.progress_dock import ProgressDock
 from bober.windows.login_window import LoginWindow
 from bober.windows.main_window import MainWindow
 from bober.windows.settings_window import SettingsWindow
-from bober.workers import DownloadThread, ChangeFolderThread
+from bober.workers import ChangeFolderThread, DownloadThread
 
 
 class Window(MainWindow):
@@ -154,7 +153,9 @@ class Window(MainWindow):
         self.set_status_bar_message(self.path)
         self.list_widget.clear()
         self.details.clear()
-        thread = ChangeFolderThread(self.list_widget, self.path, self.folder_icon, self.file_icon)
+        thread = ChangeFolderThread(
+            self.list_widget, self.path, self.folder_icon, self.file_icon
+        )
 
         thread.start()
         self.threads.append(thread)
@@ -314,8 +315,10 @@ class Window(MainWindow):
                     coll = glob.irods_session.collections.get(irods_path)
                     objects = coll.data_objects
                     n = len(objects) - 1
-                bar = self.progress_dock.add_download(posixpath.basename(irods_path), n)
-                t = DownloadThread(self.path, target.text(), folder, bar)
+                progress_bar = self.progress_dock.add_download(
+                    posixpath.basename(irods_path), n
+                )
+                t = DownloadThread(self.path, target.text(), folder, progress_bar)
                 t.signals.workerMessage.connect(self.download_finished)
                 t.signals.delete_bar.connect(self.delete_bar)
                 t.start()

@@ -1,13 +1,12 @@
 import os
-import traceback
 import posixpath
-
-from qtpy.QtWidgets import QListWidgetItem
-from qtpy.QtCore import QObject, Signal, QThread
-
-import bober.globals as glob
+import traceback
 
 from irods.exception import CAT_NO_ROWS_FOUND, CollectionDoesNotExist
+from qtpy.QtCore import QObject, QThread, Signal
+from qtpy.QtWidgets import QListWidgetItem
+
+import bober.globals as glob
 
 
 class WorkerSignalsMsg(QObject):
@@ -19,7 +18,7 @@ class WorkerSignalsMsg(QObject):
 
 class ChangeFolderThread(QThread):
     def __init__(self, list_widget, path, folder_icon, file_icon):
-        super(ChangeFolderThread, self).__init__()
+        super().__init__()
         self.list_widget = list_widget
         self.path = path
         self.folder_icon = folder_icon
@@ -46,13 +45,14 @@ class ChangeFolderThread(QThread):
 
         self.list_widget.sortItems()
 
+
 class DownloadThread(QThread):
-    def __init__(self, path, download_target, folder, bar):
-        super(DownloadThread, self).__init__()
+    def __init__(self, path, download_target, folder, progress_bar):
+        super().__init__()
         self.path = path
         self.download_target = download_target
         self.folder = folder
-        self.bar = bar
+        self.progress_bar = progress_bar
         self.signals = WorkerSignalsMsg()
 
     def run(self) -> None:
@@ -66,10 +66,10 @@ class DownloadThread(QThread):
                         save_folder = os.path.join(self.folder, coll.name)
                         os.makedirs(save_folder, exist_ok=True)
                         glob.irods_session.data_objects.get(d.path, save_folder)
-                        self.bar.setValue(self.bar.value() + 1)
+                        self.progress_bar.setValue(self.progress_bar.value() + 1)
                 else:
                     glob.irods_session.data_objects.get(irods_path, self.folder)
-                    self.bar.setValue(1)
+                    self.progress_bar.setValue(1)
                 self.signals.workerMessage.emit(irods_path)
 
             except CAT_NO_ROWS_FOUND as e:

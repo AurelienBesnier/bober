@@ -1,15 +1,14 @@
 import os
 import sys
 
-import bober.globals as glob
-
-from qtpy.QtGui import QIcon
 from qtpy.QtCore import QSettings
+from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication
 
+import bober.globals as glob
 from bober.utils import assets_folder
-from bober.windows.window import Window
 from bober.version import __version__
+from bober.windows.window import Window
 
 
 def quit_application():

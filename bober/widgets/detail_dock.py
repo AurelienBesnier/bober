@@ -1,12 +1,12 @@
+from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
-    QWidget,
     QDockWidget,
-    QGroupBox,
     QFormLayout,
+    QGroupBox,
     QLabel,
     QVBoxLayout,
+    QWidget,
 )
-from qtpy.QtCore import Qt
 
 
 class DetailDock(QDockWidget):
