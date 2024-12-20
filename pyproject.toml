@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "irodsgui"
+name = "bober"
 authors = [
     {name = "Aurélien Besnier", email = "aurelien.besnier@inrae.fr"},
 ]
@@ -23,11 +23,11 @@ classifiers = [
 dynamic = ["version", "readme"]
 
 [tool.setuptools.dynamic]
-version = {attr = "irodsgui.__version__"}
+version = {attr = "bober.__version__"}
 readme = {file = ["README.md"]}
 
 [tool.setuptools.packages.find]
 where = ["."]  # list of folders that contain the packages (["."] by default)
-include = ["irodsgui*"]  # package names should match these glob patterns (["*"] by default)
+include = ["bober*"]  # package names should match these glob patterns (["*"] by default)
 exclude = ["tests*"]  # exclude packages matching these glob patterns (empty by default)
 namespaces = true  # to disable scanning PEP 420 namespaces (true by default)

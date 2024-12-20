@@ -1,12 +1,20 @@
-from qtpy.QtWidgets import QWidget, QDockWidget, QFormLayout, \
-    QVBoxLayout, QProgressBar, QScrollArea, QLabel
+from qtpy.QtWidgets import (
+    QWidget,
+    QDockWidget,
+    QFormLayout,
+    QVBoxLayout,
+    QProgressBar,
+    QScrollArea,
+    QLabel,
+)
 
 
 class ProgressDock(QDockWidget):
     def __init__(self):
         super().__init__()
-        self.setFeatures(QDockWidget.DockWidgetMovable |
-                         QDockWidget.DockWidgetFloatable)
+        self.setFeatures(
+            QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable
+        )
         self.content = QWidget()
         self.scroll_area = QScrollArea()
         self.content_layout = QVBoxLayout(self.content)
@@ -56,7 +64,12 @@ class ProgressDock(QDockWidget):
         """
         for i in range(self.layout_progress.rowCount()):
             try:
-                if self.layout_progress.itemAt(i, QFormLayout.ItemRole.LabelRole).widget().text() == item:
+                if (
+                    self.layout_progress.itemAt(i, QFormLayout.ItemRole.LabelRole)
+                    .widget()
+                    .text()
+                    == item
+                ):
                     self.layout_progress.removeRow(i)
             except AttributeError:
                 pass

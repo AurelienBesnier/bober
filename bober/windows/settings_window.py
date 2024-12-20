@@ -1,9 +1,15 @@
 import json
-import irodsgui.globals as glob
+import bober.globals as glob
 from qtpy.QtGui import QIntValidator
 from qtpy.QtCore import Qt, QSettings, QStandardPaths
-from qtpy.QtWidgets import QWidget, QGridLayout, QLineEdit, QPushButton, \
-    QLabel, QFileDialog
+from qtpy.QtWidgets import (
+    QWidget,
+    QGridLayout,
+    QLineEdit,
+    QPushButton,
+    QLabel,
+    QFileDialog,
+)
 
 
 class SettingsWindow(QWidget):
@@ -24,12 +30,11 @@ class SettingsWindow(QWidget):
         self.zoneEdit = QLineEdit()
         self.rootLabel = QLabel("Root path:")
         self.rootEdit = QLineEdit()
-        self.config_location = self.settings.value('config_path',
-                                                   defaultValue='')
-        self.host = self.settings.value('host', defaultValue='')
-        self.port = self.settings.value('port', defaultValue='')
-        self.zone = self.settings.value('zone', defaultValue='')
-        self.rootPath = self.settings.value('root_path', defaultValue='/')
+        self.config_location = self.settings.value("config_path", defaultValue="")
+        self.host = self.settings.value("host", defaultValue="")
+        self.port = self.settings.value("port", defaultValue="")
+        self.zone = self.settings.value("zone", defaultValue="")
+        self.rootPath = self.settings.value("root_path", defaultValue="/")
 
         self.cfgEdit.setText(self.config_location)
         self.cfgButton = QPushButton("...")
@@ -71,14 +76,15 @@ class SettingsWindow(QWidget):
         Select the irods configuration file and parse it.
         """
         home_folder = QStandardPaths.writableLocation(
-            QStandardPaths.StandardLocation.HomeLocation)
+            QStandardPaths.StandardLocation.HomeLocation
+        )
         print(home_folder)
-        self.config_location = QFileDialog.getOpenFileUrl(self,
-                                                          "Select irods "
-                                                          "configuration",
-                                                          dir=home_folder,
-                                                          filter="config files (*.json)")[
-            0].toLocalFile()
+        self.config_location = QFileDialog.getOpenFileUrl(
+            self,
+            "Select irods " "configuration",
+            dir=home_folder,
+            filter="config files (*.json)",
+        )[0].toLocalFile()
         print(self.config_location)
 
         if self.config_location == "":
@@ -90,12 +96,12 @@ class SettingsWindow(QWidget):
         """
         Parse the configuration file and set the line edits with the info in it.
         """
-        with open(self.config_location, 'r') as f:
+        with open(self.config_location, "r") as f:
             data = json.load(f)
-            self.port = data['irods_port']
-            self.host = data['irods_host']
-            self.zone = data['irods_zone_name']
-            self.rootPath = data['irods_home']
+            self.port = data["irods_port"]
+            self.host = data["irods_host"]
+            self.zone = data["irods_zone_name"]
+            self.rootPath = data["irods_home"]
 
             self.hostEdit.setText(self.host)
             self.portEdit.setText(str(self.port))

@@ -1,22 +1,33 @@
-from qtpy.QtWidgets import QWidget, QDockWidget, QGroupBox, QFormLayout, \
-    QLabel, QVBoxLayout
+from qtpy.QtWidgets import (
+    QWidget,
+    QDockWidget,
+    QGroupBox,
+    QFormLayout,
+    QLabel,
+    QVBoxLayout,
+)
 from qtpy.QtCore import Qt
 
 
 class DetailDock(QDockWidget):
     def __init__(self):
         super().__init__()
-        self.setFeatures(QDockWidget.DockWidgetMovable |
-                         QDockWidget.DockWidgetFloatable)
+        self.setFeatures(
+            QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable
+        )
         self.content = QWidget()
         self.content_layout = QVBoxLayout(self.content)
         self.group_detail = QGroupBox("File Details")
         self.content_layout.addWidget(self.group_detail)
         self.layout_detail = QFormLayout(self.group_detail)
         self.filename = QLabel(self)
-        self.filename.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.filename.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse
+        )
         self.replicas = QLabel(self)
-        self.replicas.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.replicas.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse
+        )
         self.coll = QLabel(self)
         self.coll.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.layout_detail.addRow("File name: ", self.filename)
