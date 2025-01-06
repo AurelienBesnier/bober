@@ -4,8 +4,8 @@ import sys
 
 from irods.exception import CAT_NO_ACCESS_PERMISSION, OVERWRITE_WITHOUT_FORCE_FLAG
 from irods.models import DataObject
-from qtpy.QtCore import QSettings, QStandardPaths, Qt, QUrl
-from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence
+from qtpy.QtCore import QSettings, QStandardPaths, Qt, QUrl, QSize
+from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence,QMovie
 from qtpy.QtWidgets import (
     QAbstractItemView,
     QAction,
@@ -21,7 +21,9 @@ from qtpy.QtWidgets import (
     QTabWidget,
     QToolBar,
     QVBoxLayout,
+    QHBoxLayout,
     QWidget,
+    QLabel
 )
 
 import bober.globals as glob
@@ -59,8 +61,18 @@ class Window(MainWindow):
         self.tab_widget = QTabWidget(self)
         self.toolbar.addWidget(self.back_button)
         self.toolbar.addWidget(self.search_bar)
+        self.change_layout = QHBoxLayout()
+        self.change_lbl = QLabel()
+        self.change_progress = QMovie(str(assets_folder() / "loading-anim.gif"),
+                                      parent=self.change_lbl)
+        print(self.change_progress.fileName())
+        self.change_lbl.setMovie(self.change_progress)
+        self.change_progress.setScaledSize(QSize(32,32))
+        self.change_layout.addWidget(self.change_lbl)
+
         self.content_layout.addWidget(self.toolbar)
         self.content_layout.addWidget(self.tab_widget)
+        self.content_layout.addLayout(self.change_layout)
         self.list_widget = QListWidget(self)
         self.list_widget.currentItemChanged.connect(self.detail_item)
         self.list_widget.itemDoubleClicked.connect(self.on_double_click)
@@ -154,30 +166,23 @@ class Window(MainWindow):
         self.list_widget.clear()
         self.details.clear()
         thread = ChangeFolderThread(
-            self.list_widget, self.path, self.folder_icon, self.file_icon
+            self.list_widget, self.path, self.folder_icon, self.file_icon,
+            self.change_lbl
         )
+        thread.signals.show_change.connect(self.show_change)
+        thread.signals.hide_change.connect(self.hide_change)
 
         thread.start()
         self.threads.append(thread)
-        # dirs = [QListWidgetItem(self.folder_icon, "..")]
-        # files = []
-        # coll = glob.irods_session.collections.get(self.path)
-        # dirs.extend(
-        #     [QListWidgetItem(self.folder_icon, d.name) for d in coll.subcollections]
-        # )
-        # files.extend(
-        #     [
-        #         QListWidgetItem(self.file_icon, f.name, None, 1000)
-        #         for f in coll.data_objects
-        #     ]
-        # )
-        #
-        # for directory in dirs:
-        #     self.list_widget.addItem(directory)
-        # for file in files:
-        #     self.list_widget.addItem(file)
-        #
-        # self.list_widget.sortItems()
+
+    def show_change(self):
+        self.change_lbl.show()
+        self.change_progress.start()
+
+    def hide_change(self):
+        self.change_lbl.hide()
+        self.change_progress.stop()
+
 
     @staticmethod
     def open_file(filepath):

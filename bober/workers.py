@@ -1,6 +1,7 @@
 import os
 import posixpath
 import traceback
+from time import sleep
 
 from irods.exception import CAT_NO_ROWS_FOUND, CollectionDoesNotExist
 from qtpy.QtCore import QObject, QThread, Signal
@@ -15,16 +16,24 @@ class WorkerSignalsMsg(QObject):
     delete_bar = Signal(str, name="delete_bar")
     workerMessage = Signal(str, name="workerMessage")
 
+class ChangeSignals(QObject):
+    hide_change = Signal(name="hide_change")
+    show_change = Signal(name="show_change")
+
+
 
 class ChangeFolderThread(QThread):
-    def __init__(self, list_widget, path, folder_icon, file_icon):
+    def __init__(self, list_widget, path, folder_icon, file_icon, change_progress):
         super().__init__()
         self.list_widget = list_widget
         self.path = path
         self.folder_icon = folder_icon
         self.file_icon = file_icon
+        self.change_progress = change_progress
+        self.signals = ChangeSignals()
 
     def run(self):
+        self.signals.show_change.emit()
         dirs = [QListWidgetItem(self.folder_icon, "..")]
         files = []
         coll = glob.irods_session.collections.get(self.path)
@@ -44,6 +53,7 @@ class ChangeFolderThread(QThread):
             self.list_widget.addItem(file)
 
         self.list_widget.sortItems()
+        self.signals.hide_change.emit()
 
 
 class DownloadThread(QThread):
