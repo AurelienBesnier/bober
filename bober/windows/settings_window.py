@@ -9,6 +9,7 @@ from qtpy.QtWidgets import (
     QLineEdit,
     QPushButton,
     QWidget,
+    QCheckBox
 )
 
 import bober.globals as glob
@@ -20,6 +21,8 @@ class SettingsWindow(QWidget):
         self.settings = QSettings()
         self.setWindowTitle(f"{glob.app_name} - Settings")
         self.layout = QGridLayout(self)
+
+        # Widgets
         self.cfg_label = QLabel("Config path:")
         self.cfg_edit = QLineEdit()
         self.host_label = QLabel("Host:")
@@ -27,16 +30,20 @@ class SettingsWindow(QWidget):
         self.port_label = QLabel("Port:")
         self.port_edit = QLineEdit()
         self.port_edit.setValidator(QIntValidator(0, 9999999))
-
         self.zone_label = QLabel("Zone:")
         self.zone_edit = QLineEdit()
         self.root_label = QLabel("Root path:")
         self.root_edit = QLineEdit()
+        self.notification_label = QLabel("Download notifications:")
+        self.notification_check = QCheckBox()
+
+        # Settings
         self.config_location = self.settings.value("config_path", defaultValue="")
         self.host = self.settings.value("host", defaultValue="")
         self.port = self.settings.value("port", defaultValue="")
         self.zone = self.settings.value("zone", defaultValue="")
         self.root_path = self.settings.value("root_path", defaultValue="/")
+        self.notifications = self.settings.value("notifications", defaultValue="true")
 
         self.cfg_edit.setText(self.config_location.__str__())
         self.cfg_button = QPushButton("...")
@@ -46,6 +53,10 @@ class SettingsWindow(QWidget):
         self.port_edit.setText(self.port.__str__())
         self.zone_edit.setText(self.zone.__str__())
         self.root_edit.setText(self.root_path.__str__())
+        if self.notifications == "false":
+            self.notification_check.setChecked(False)
+        elif self.notifications == "true":
+            self.notification_check.setChecked(True)
 
         self.save_button = QPushButton("Save")
         self.save_button.clicked.connect(self.save)
@@ -70,8 +81,11 @@ class SettingsWindow(QWidget):
         self.layout.addWidget(self.root_label, 4, 0)
         self.layout.addWidget(self.root_edit, 4, 1, 1, 2)
 
-        self.layout.addWidget(self.save_button, 5, 0)
-        self.layout.addWidget(self.cancel_button, 5, 1, 1, 2)
+        self.layout.addWidget(self.notification_label, 5, 0)
+        self.layout.addWidget(self.notification_check, 5, 1, 1, 2)
+
+        self.layout.addWidget(self.save_button, 6, 0)
+        self.layout.addWidget(self.cancel_button, 6, 1, 1, 2)
 
     def select_cfg(self) -> None:
         """
@@ -122,6 +136,7 @@ class SettingsWindow(QWidget):
         self.settings.setValue("host", self.host_edit.text())
         self.settings.setValue("zone", self.zone_edit.text())
         self.settings.setValue("root_path", self.root_edit.text())
+        self.settings.setValue("notifications", self.notification_check.isChecked())
         self.close()
 
     def keyPressEvent(self, event, **kwargs):

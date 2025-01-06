@@ -330,9 +330,10 @@ class Window(MainWindow):
                 self.threads.append(t)
 
     def download_finished(self, msg):
-        self.tray_icon.showMessage(
-            f"{glob.app_name}", f"{msg} downloaded", QSystemTrayIcon.Information, 2000
-        )
+        if self.settings.value("notifications", defaultValue="true") == "true":
+            self.tray_icon.showMessage(
+                f"{glob.app_name}", f"{msg} downloaded", QSystemTrayIcon.Information, 2000
+            )
 
     def delete_bar(self, item):
         self.progress_dock.delete_row(item)

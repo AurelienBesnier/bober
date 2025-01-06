@@ -71,5 +71,7 @@ class ProgressDock(QDockWidget):
                     == item
                 ):
                     self.layout_progress.removeRow(i)
+                if self.layout_progress.rowCount() == 0:
+                    self.hide()
             except AttributeError:
                 pass

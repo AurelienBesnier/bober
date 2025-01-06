@@ -1,7 +1,6 @@
 import os
 import posixpath
 import traceback
-from time import sleep
 
 from irods.exception import CAT_NO_ROWS_FOUND, CollectionDoesNotExist
 from qtpy.QtCore import QObject, QThread, Signal
