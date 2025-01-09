@@ -45,7 +45,7 @@ jobs:
         --icon=./assets/icon.ico \
         --add-data=./assets/icon.ico:bober/assets/ \
         --add-data=./assets/bober/bober.png:bober/assets/bober/
-        --add-data=./assets/bober/loading-anim.gif:bober/assets/bober/
+        --add-data=./assets/loading-anim.gif:bober/assets
     - name: upload
       uses: actions/upload-artifact@v4
       with:
