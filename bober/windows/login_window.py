@@ -1,8 +1,7 @@
-from qtpy.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, QMessageBox
-from qtpy.QtCore import QSettings
-
 import irods
 from irods.session import iRODSSession
+from qtpy.QtCore import QSettings
+from qtpy.QtWidgets import QDialog, QFormLayout, QLineEdit, QMessageBox, QPushButton
 
 import bober.globals as glob
 
@@ -14,14 +13,14 @@ class LoginWindow(QDialog):
         self.settings = QSettings()
 
         self.layout = QFormLayout(self)
-        self.usernameEdit = QLineEdit(self)
-        self.passwordEdit = QLineEdit(self)
-        self.passwordEdit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.confirmButton = QPushButton("Confirm", self)
-        self.confirmButton.clicked.connect(self.login)
-        self.layout.addRow("Username: ", self.usernameEdit)
-        self.layout.addRow("Password: ", self.passwordEdit)
-        self.layout.addRow(self.confirmButton)
+        self.username_edit = QLineEdit(self)
+        self.password_edit = QLineEdit(self)
+        self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.confirm_button = QPushButton("Confirm", self)
+        self.confirm_button.clicked.connect(self.login)
+        self.layout.addRow("Username: ", self.username_edit)
+        self.layout.addRow("Password: ", self.password_edit)
+        self.layout.addRow(self.confirm_button)
         self.adjustSize()
 
     def login(self) -> None:
@@ -46,8 +45,8 @@ class LoginWindow(QDialog):
         }
         try:
             glob.irods_session = iRODSSession(
-                user=self.usernameEdit.text(),
-                password=self.passwordEdit.text(),
+                user=self.username_edit.text(),
+                password=self.password_edit.text(),
                 host=host,
                 port=port,
                 zone=zone,

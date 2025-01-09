@@ -1,15 +1,18 @@
 import json
-import bober.globals as glob
+
+from qtpy.QtCore import QSettings, QStandardPaths, Qt
 from qtpy.QtGui import QIntValidator
-from qtpy.QtCore import Qt, QSettings, QStandardPaths
 from qtpy.QtWidgets import (
-    QWidget,
+    QFileDialog,
     QGridLayout,
+    QLabel,
     QLineEdit,
     QPushButton,
-    QLabel,
-    QFileDialog,
+    QWidget,
+    QCheckBox
 )
+
+import bober.globals as glob
 
 
 class SettingsWindow(QWidget):
@@ -18,58 +21,71 @@ class SettingsWindow(QWidget):
         self.settings = QSettings()
         self.setWindowTitle(f"{glob.app_name} - Settings")
         self.layout = QGridLayout(self)
-        self.cfgLabel = QLabel("Config path:")
-        self.cfgEdit = QLineEdit()
-        self.hostLabel = QLabel("Host:")
-        self.hostEdit = QLineEdit()
-        self.portLabel = QLabel("Port:")
-        self.portEdit = QLineEdit()
-        self.portEdit.setValidator(QIntValidator(0, 9999999))
 
-        self.zoneLabel = QLabel("Zone:")
-        self.zoneEdit = QLineEdit()
-        self.rootLabel = QLabel("Root path:")
-        self.rootEdit = QLineEdit()
+        # Widgets
+        self.cfg_label = QLabel("Config path:")
+        self.cfg_edit = QLineEdit()
+        self.host_label = QLabel("Host:")
+        self.host_edit = QLineEdit()
+        self.port_label = QLabel("Port:")
+        self.port_edit = QLineEdit()
+        self.port_edit.setValidator(QIntValidator(0, 9999999))
+        self.zone_label = QLabel("Zone:")
+        self.zone_edit = QLineEdit()
+        self.root_label = QLabel("Root path:")
+        self.root_edit = QLineEdit()
+        self.notification_label = QLabel("Download notifications:")
+        self.notification_check = QCheckBox()
+
+        # Settings
         self.config_location = self.settings.value("config_path", defaultValue="")
         self.host = self.settings.value("host", defaultValue="")
         self.port = self.settings.value("port", defaultValue="")
         self.zone = self.settings.value("zone", defaultValue="")
-        self.rootPath = self.settings.value("root_path", defaultValue="/")
+        self.root_path = self.settings.value("root_path", defaultValue="/")
+        self.notifications = self.settings.value("notifications", defaultValue="true")
 
-        self.cfgEdit.setText(self.config_location)
-        self.cfgButton = QPushButton("...")
-        self.cfgButton.clicked.connect(self.select_cfg)
+        self.cfg_edit.setText(self.config_location.__str__())
+        self.cfg_button = QPushButton("...")
+        self.cfg_button.clicked.connect(self.select_cfg)
 
-        self.hostEdit.setText(self.host)
-        self.portEdit.setText(self.port)
-        self.zoneEdit.setText(self.zone)
-        self.rootEdit.setText(self.rootPath)
+        self.host_edit.setText(self.host.__str__())
+        self.port_edit.setText(self.port.__str__())
+        self.zone_edit.setText(self.zone.__str__())
+        self.root_edit.setText(self.root_path.__str__())
+        if self.notifications == "false":
+            self.notification_check.setChecked(False)
+        elif self.notifications == "true":
+            self.notification_check.setChecked(True)
 
-        self.saveButton = QPushButton("Save")
-        self.saveButton.clicked.connect(self.save)
+        self.save_button = QPushButton("Save")
+        self.save_button.clicked.connect(self.save)
 
-        self.cancelButton = QPushButton("Cancel")
-        self.cancelButton.clicked.connect(self.close)
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close)
 
         # Adding Widgets
-        self.layout.addWidget(self.cfgLabel, 0, 0)
-        self.layout.addWidget(self.cfgEdit, 0, 1)
-        self.layout.addWidget(self.cfgButton, 0, 2)
+        self.layout.addWidget(self.cfg_label, 0, 0)
+        self.layout.addWidget(self.cfg_edit, 0, 1)
+        self.layout.addWidget(self.cfg_button, 0, 2)
 
-        self.layout.addWidget(self.hostLabel, 1, 0)
-        self.layout.addWidget(self.hostEdit, 1, 1, 1, 2)
+        self.layout.addWidget(self.host_label, 1, 0)
+        self.layout.addWidget(self.host_edit, 1, 1, 1, 2)
 
-        self.layout.addWidget(self.portLabel, 2, 0)
-        self.layout.addWidget(self.portEdit, 2, 1, 1, 2)
+        self.layout.addWidget(self.port_label, 2, 0)
+        self.layout.addWidget(self.port_edit, 2, 1, 1, 2)
 
-        self.layout.addWidget(self.zoneLabel, 3, 0)
-        self.layout.addWidget(self.zoneEdit, 3, 1, 1, 2)
+        self.layout.addWidget(self.zone_label, 3, 0)
+        self.layout.addWidget(self.zone_edit, 3, 1, 1, 2)
 
-        self.layout.addWidget(self.rootLabel, 4, 0)
-        self.layout.addWidget(self.rootEdit, 4, 1, 1, 2)
+        self.layout.addWidget(self.root_label, 4, 0)
+        self.layout.addWidget(self.root_edit, 4, 1, 1, 2)
 
-        self.layout.addWidget(self.saveButton, 5, 0)
-        self.layout.addWidget(self.cancelButton, 5, 1, 1, 2)
+        self.layout.addWidget(self.notification_label, 5, 0)
+        self.layout.addWidget(self.notification_check, 5, 1, 1, 2)
+
+        self.layout.addWidget(self.save_button, 6, 0)
+        self.layout.addWidget(self.cancel_button, 6, 1, 1, 2)
 
     def select_cfg(self) -> None:
         """
@@ -81,7 +97,7 @@ class SettingsWindow(QWidget):
         print(home_folder)
         self.config_location = QFileDialog.getOpenFileUrl(
             self,
-            "Select irods " "configuration",
+            "Select irods configuration",
             dir=home_folder,
             filter="config files (*.json)",
         )[0].toLocalFile()
@@ -89,24 +105,24 @@ class SettingsWindow(QWidget):
 
         if self.config_location == "":
             return
-        self.cfgEdit.setText(self.config_location)
+        self.cfg_edit.setText(self.config_location)
         self.parse_config()
 
     def parse_config(self) -> None:
         """
         Parse the configuration file and set the line edits with the info in it.
         """
-        with open(self.config_location, "r") as f:
+        with open(self.config_location.__str__(), "r", encoding="UTF8") as f:
             data = json.load(f)
             self.port = data["irods_port"]
             self.host = data["irods_host"]
             self.zone = data["irods_zone_name"]
-            self.rootPath = data["irods_home"]
+            self.root_path = data["irods_home"]
 
-            self.hostEdit.setText(self.host)
-            self.portEdit.setText(str(self.port))
-            self.zoneEdit.setText(self.zone)
-            self.rootEdit.setText(self.rootPath)
+            self.host_edit.setText(self.host)
+            self.port_edit.setText(str(self.port))
+            self.zone_edit.setText(self.zone)
+            self.root_edit.setText(self.root_path)
 
     def save(self) -> None:
         """
@@ -116,10 +132,11 @@ class SettingsWindow(QWidget):
         None
         """
         self.settings.setValue("config_path", self.config_location)
-        self.settings.setValue("port", self.portEdit.text())
-        self.settings.setValue("host", self.hostEdit.text())
-        self.settings.setValue("zone", self.zoneEdit.text())
-        self.settings.setValue("root_path", self.rootEdit.text())
+        self.settings.setValue("port", self.port_edit.text())
+        self.settings.setValue("host", self.host_edit.text())
+        self.settings.setValue("zone", self.zone_edit.text())
+        self.settings.setValue("root_path", self.root_edit.text())
+        self.settings.setValue("notifications", self.notification_check.isChecked())
         self.close()
 
     def keyPressEvent(self, event, **kwargs):

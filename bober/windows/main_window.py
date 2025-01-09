@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
-from qtpy.QtCore import QRect, QPoint, Qt
-from qtpy.QtGui import QScreen, QCursor, QGuiApplication
-from qtpy.QtWidgets import QMainWindow, QStatusBar, QMenuBar
+from qtpy.QtCore import QPoint, QRect, Qt
+from qtpy.QtGui import QCursor, QGuiApplication, QScreen
+from qtpy.QtWidgets import QMainWindow, QMenuBar, QStatusBar
 
 
 class MainWindow(QMainWindow):
@@ -41,9 +41,8 @@ class MainWindow(QMainWindow):
         """
         self.statusbar.showMessage(message, msecs)
 
-    @staticmethod
     @abstractmethod
-    def help():
+    def help(self):
         pass
 
     @staticmethod

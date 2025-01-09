@@ -2,27 +2,28 @@ import os
 import posixpath
 import sys
 
-from irods.exception import OVERWRITE_WITHOUT_FORCE_FLAG, CAT_NO_ACCESS_PERMISSION
+from irods.exception import CAT_NO_ACCESS_PERMISSION, OVERWRITE_WITHOUT_FORCE_FLAG
 from irods.models import DataObject
-from qtpy.QtCore import Qt, QSettings, QUrl, QStandardPaths
-from qtpy.QtGui import QKeySequence, QDesktopServices, QIcon
+from qtpy.QtCore import QSettings, QStandardPaths, Qt, QUrl, QSize
+from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence,QMovie
 from qtpy.QtWidgets import (
-    QAction,
-    QMenu,
-    QStyle,
-    QTabWidget,
-    QListWidget,
-    QMessageBox,
-    QDialog,
-    QListWidgetItem,
-    QWidget,
-    QVBoxLayout,
-    QLineEdit,
-    QToolBar,
-    QPushButton,
-    QFileDialog,
     QAbstractItemView,
+    QAction,
+    QDialog,
+    QFileDialog,
+    QLineEdit,
+    QListWidget,
+    QMenu,
+    QMessageBox,
+    QPushButton,
+    QStyle,
     QSystemTrayIcon,
+    QTabWidget,
+    QToolBar,
+    QVBoxLayout,
+    QHBoxLayout,
+    QWidget,
+    QLabel
 )
 
 import bober.globals as glob
@@ -33,7 +34,7 @@ from bober.widgets.progress_dock import ProgressDock
 from bober.windows.login_window import LoginWindow
 from bober.windows.main_window import MainWindow
 from bober.windows.settings_window import SettingsWindow
-from bober.workers import DownloadThread, ChangeFolderThread
+from bober.workers import ChangeFolderThread, DownloadThread
 
 
 class Window(MainWindow):
@@ -52,6 +53,7 @@ class Window(MainWindow):
             self.style().standardIcon(QStyle.StandardPixmap.SP_ArrowBack)
         )
         self.back_button.clicked.connect(self.back_folder)
+        self.back_button.setShortcut(QKeySequence.StandardKey.Back)
         self.search_bar = QLineEdit(self)
         self.search_bar.setPlaceholderText("Filter...")
         self.search_bar.textChanged.connect(
@@ -60,8 +62,18 @@ class Window(MainWindow):
         self.tab_widget = QTabWidget(self)
         self.toolbar.addWidget(self.back_button)
         self.toolbar.addWidget(self.search_bar)
+        self.change_layout = QHBoxLayout()
+        self.change_lbl = QLabel()
+        self.change_progress = QMovie(str(assets_folder() / "loading-anim.gif"),
+                                      parent=self.change_lbl)
+        print(self.change_progress.fileName())
+        self.change_lbl.setMovie(self.change_progress)
+        self.change_progress.setScaledSize(QSize(32,32))
+        self.change_layout.addWidget(self.change_lbl)
+
         self.content_layout.addWidget(self.toolbar)
         self.content_layout.addWidget(self.tab_widget)
+        self.content_layout.addLayout(self.change_layout)
         self.list_widget = QListWidget(self)
         self.list_widget.currentItemChanged.connect(self.detail_item)
         self.list_widget.itemDoubleClicked.connect(self.on_double_click)
@@ -154,29 +166,24 @@ class Window(MainWindow):
         self.set_status_bar_message(self.path)
         self.list_widget.clear()
         self.details.clear()
-        thread = ChangeFolderThread(self.list_widget, self.path, self.folder_icon, self.file_icon)
+        thread = ChangeFolderThread(
+            self.list_widget, self.path, self.folder_icon, self.file_icon,
+            self.change_lbl
+        )
+        thread.signals.show_change.connect(self.show_change)
+        thread.signals.hide_change.connect(self.hide_change)
 
         thread.start()
         self.threads.append(thread)
-        # dirs = [QListWidgetItem(self.folder_icon, "..")]
-        # files = []
-        # coll = glob.irods_session.collections.get(self.path)
-        # dirs.extend(
-        #     [QListWidgetItem(self.folder_icon, d.name) for d in coll.subcollections]
-        # )
-        # files.extend(
-        #     [
-        #         QListWidgetItem(self.file_icon, f.name, None, 1000)
-        #         for f in coll.data_objects
-        #     ]
-        # )
-        #
-        # for directory in dirs:
-        #     self.list_widget.addItem(directory)
-        # for file in files:
-        #     self.list_widget.addItem(file)
-        #
-        # self.list_widget.sortItems()
+
+    def show_change(self):
+        self.change_lbl.show()
+        self.change_progress.start()
+
+    def hide_change(self):
+        self.change_lbl.hide()
+        self.change_progress.stop()
+
 
     @staticmethod
     def open_file(filepath):
@@ -208,6 +215,7 @@ class Window(MainWindow):
         self.settings_window.show()
 
     def setup_menus(self):
+        refresh_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_BrowserReload)
         quit_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_BrowserStop)
         login_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_ComputerIcon)
         qt_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarMenuButton)
@@ -216,14 +224,19 @@ class Window(MainWindow):
         )
         # File Menu
         file_menu = QMenu("File", self)
-        quit_action = QAction(quit_icon, "Quit", self)
-        quit_action.triggered.connect(self.close)
-        quit_action.setShortcut(QKeySequence.StandardKey.Quit)
-
         login_action = QAction(login_icon, "Login", self)
         login_action.triggered.connect(self.login)
         login_action.setShortcut(QKeySequence.StandardKey.Open)
+
+        refresh_action = QAction(refresh_icon, "Refresh", self)
+        refresh_action.triggered.connect(self.change_folder)
+        refresh_action.setShortcut(QKeySequence.StandardKey.Refresh)
+
+        quit_action = QAction(quit_icon, "Quit", self)
+        quit_action.triggered.connect(self.close)
+        quit_action.setShortcut(QKeySequence.StandardKey.Quit)
         file_menu.addAction(login_action)
+        file_menu.addAction(refresh_action)
         file_menu.addSeparator()
         file_menu.addAction(quit_action)
 
@@ -314,20 +327,27 @@ class Window(MainWindow):
                     coll = glob.irods_session.collections.get(irods_path)
                     objects = coll.data_objects
                     n = len(objects) - 1
-                bar = self.progress_dock.add_download(posixpath.basename(irods_path), n)
-                t = DownloadThread(self.path, target.text(), folder, bar)
+                progress_bar = self.progress_dock.add_download(
+                    posixpath.basename(irods_path), n
+                )
+                t = DownloadThread(self.path, target.text(), folder, progress_bar)
                 t.signals.workerMessage.connect(self.download_finished)
                 t.signals.delete_bar.connect(self.delete_bar)
                 t.start()
                 self.threads.append(t)
 
     def download_finished(self, msg):
-        self.tray_icon.showMessage(
-            f"{glob.app_name}", f"{msg} downloaded", QSystemTrayIcon.Information, 2000
-        )
+        if self.settings.value("notifications", defaultValue="true") == "true":
+            self.tray_icon.showMessage(
+                f"{glob.app_name}", f"{msg} downloaded", QSystemTrayIcon.Information, 2000
+            )
 
     def delete_bar(self, item):
         self.progress_dock.delete_row(item)
 
     def contextMenuEvent(self, a0, QContextMenuEvent=None) -> None:
         self.menu.exec(a0.globalPos())
+
+    def keyPressEvent(self, event, **kwargs):
+        if event.key() == Qt.Key.Key_F5:
+            self.change_folder()
