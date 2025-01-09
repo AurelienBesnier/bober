@@ -53,6 +53,7 @@ class Window(MainWindow):
             self.style().standardIcon(QStyle.StandardPixmap.SP_ArrowBack)
         )
         self.back_button.clicked.connect(self.back_folder)
+        self.back_button.setShortcut(QKeySequence.StandardKey.Back)
         self.search_bar = QLineEdit(self)
         self.search_bar.setPlaceholderText("Filter...")
         self.search_bar.textChanged.connect(
@@ -214,6 +215,7 @@ class Window(MainWindow):
         self.settings_window.show()
 
     def setup_menus(self):
+        refresh_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_BrowserReload)
         quit_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_BrowserStop)
         login_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_ComputerIcon)
         qt_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarMenuButton)
@@ -222,14 +224,19 @@ class Window(MainWindow):
         )
         # File Menu
         file_menu = QMenu("File", self)
-        quit_action = QAction(quit_icon, "Quit", self)
-        quit_action.triggered.connect(self.close)
-        quit_action.setShortcut(QKeySequence.StandardKey.Quit)
-
         login_action = QAction(login_icon, "Login", self)
         login_action.triggered.connect(self.login)
         login_action.setShortcut(QKeySequence.StandardKey.Open)
+
+        refresh_action = QAction(refresh_icon, "Refresh", self)
+        refresh_action.triggered.connect(self.change_folder)
+        refresh_action.setShortcut(QKeySequence.StandardKey.Refresh)
+
+        quit_action = QAction(quit_icon, "Quit", self)
+        quit_action.triggered.connect(self.close)
+        quit_action.setShortcut(QKeySequence.StandardKey.Quit)
         file_menu.addAction(login_action)
+        file_menu.addAction(refresh_action)
         file_menu.addSeparator()
         file_menu.addAction(quit_action)
 
@@ -340,3 +347,7 @@ class Window(MainWindow):
 
     def contextMenuEvent(self, a0, QContextMenuEvent=None) -> None:
         self.menu.exec(a0.globalPos())
+
+    def keyPressEvent(self, event, **kwargs):
+        if event.key() == Qt.Key.Key_F5:
+            self.change_folder()
