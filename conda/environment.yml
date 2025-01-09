@@ -3,6 +3,7 @@ channels:
 dependencies:
   - python
   - python-irodsclient
+  - pyinstaller
   - pyside6
   - qtpy
   - pillow
