@@ -148,7 +148,7 @@ class Window(MainWindow):
                     posixpath.join(self.path, item.text())
                 )
                 self.detail_dock.update_info(
-                    item.text(), data.replicas, data.collection
+                    item.text(), data.replicas, data.collection, data.size
                 )
         except AttributeError as e:
             print(e)

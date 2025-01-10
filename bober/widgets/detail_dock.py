@@ -8,6 +8,13 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
+def sizeof_fmt(num, suffix="B"):
+    for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
+        if abs(num) < 1024.0:
+            return f"{num:3.1f}{unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f}Yi{suffix}"
+
 
 class DetailDock(QDockWidget):
     def __init__(self):
@@ -30,12 +37,16 @@ class DetailDock(QDockWidget):
         )
         self.coll = QLabel(self)
         self.coll.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        self.size = QLabel(self)
+        self.size.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.layout_detail.addRow("File name: ", self.filename)
         self.layout_detail.addRow("Replicas: ", self.replicas)
         self.layout_detail.addRow("Collection: ", self.coll)
+        self.layout_detail.addRow("Size: ", self.size)
         self.setWidget(self.content)
 
-    def update_info(self, filename, replicas, coll) -> None:
+    def update_info(self, filename, replicas, coll, size) -> None:
         """
         Update the information of the detail dock with the selected file.
         Parameters
@@ -54,3 +65,4 @@ class DetailDock(QDockWidget):
         self.filename.setText(filename)
         self.replicas.setText(";".join([str(s.resource_name) for s in replicas]))
         self.coll.setText(coll.name)
+        self.size.setText(sizeof_fmt(size))
