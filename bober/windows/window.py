@@ -140,15 +140,16 @@ class Window(MainWindow):
                 if self.detail_dock.isHidden():
                     self.detail_dock.show()
                 print(posixpath.join(self.path, item.text()))
-                meta = glob.irods_session.metadata.get(
-                    DataObject, posixpath.join(self.path, item.text())
-                )
-                print(meta)
+                # meta = glob.irods_session.metadata.get(
+                #     DataObject, posixpath.join(self.path, item.text())
+                # )
+                # print(meta)
                 data = glob.irods_session.data_objects.get(
                     posixpath.join(self.path, item.text())
                 )
                 self.detail_dock.update_info(
-                    item.text(), data.replicas, data.collection, data.size
+                    item.text(), data.replicas, data.collection, data.size,
+                    data.create_time
                 )
         except AttributeError as e:
             print(e)

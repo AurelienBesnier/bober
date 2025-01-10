@@ -8,6 +8,10 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
+import datetime
+
+local_tz = datetime.datetime.now().astimezone().tzinfo
+
 def sizeof_fmt(num, suffix="B"):
     for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
         if abs(num) < 1024.0:
@@ -37,16 +41,19 @@ class DetailDock(QDockWidget):
         )
         self.coll = QLabel(self)
         self.coll.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-
         self.size = QLabel(self)
         self.size.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.create_time = QLabel(self)
+        self.create_time.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+
         self.layout_detail.addRow("File name: ", self.filename)
         self.layout_detail.addRow("Replicas: ", self.replicas)
         self.layout_detail.addRow("Collection: ", self.coll)
+        self.layout_detail.addRow("Creation time: ", self.create_time)
         self.layout_detail.addRow("Size: ", self.size)
         self.setWidget(self.content)
 
-    def update_info(self, filename, replicas, coll, size) -> None:
+    def update_info(self, filename, replicas, coll, size, create_time) -> None:
         """
         Update the information of the detail dock with the selected file.
         Parameters
@@ -57,6 +64,10 @@ class DetailDock(QDockWidget):
             The replicas where the file can be found.
         coll: iRODSCollection
             The collection where the file is.
+        size: int
+            The size of the file in bits.
+        create_time: date
+            The date of the creation of the file.
 
         Returns
         -------
@@ -66,3 +77,4 @@ class DetailDock(QDockWidget):
         self.replicas.setText(";".join([str(s.resource_name) for s in replicas]))
         self.coll.setText(coll.name)
         self.size.setText(sizeof_fmt(size))
+        self.create_time.setText(create_time.astimezone(local_tz).strftime("%c %z"))
