@@ -12,6 +12,7 @@ import datetime
 
 local_tz = datetime.datetime.now().astimezone().tzinfo
 
+
 def sizeof_fmt(num, suffix="B"):
     for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
         if abs(num) < 1024.0:
@@ -44,9 +45,13 @@ class DetailDock(QDockWidget):
         self.size = QLabel(self)
         self.size.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.create_time = QLabel(self)
-        self.create_time.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.create_time.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse
+        )
         self.modify_time = QLabel(self)
-        self.modify_time.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.modify_time.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse
+        )
 
         self.layout_detail.addRow("File name: ", self.filename)
         self.layout_detail.addRow("Replicas: ", self.replicas)

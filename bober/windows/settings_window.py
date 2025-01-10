@@ -9,7 +9,7 @@ from qtpy.QtWidgets import (
     QLineEdit,
     QPushButton,
     QWidget,
-    QCheckBox
+    QCheckBox,
 )
 
 import bober.globals as glob

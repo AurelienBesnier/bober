@@ -5,7 +5,7 @@ import sys
 from irods.exception import CAT_NO_ACCESS_PERMISSION, OVERWRITE_WITHOUT_FORCE_FLAG
 from irods.models import DataObject
 from qtpy.QtCore import QSettings, QStandardPaths, Qt, QUrl, QSize
-from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence,QMovie
+from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence, QMovie
 from qtpy.QtWidgets import (
     QAbstractItemView,
     QAction,
@@ -23,7 +23,7 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QWidget,
-    QLabel
+    QLabel,
 )
 
 import bober.globals as glob
@@ -64,11 +64,12 @@ class Window(MainWindow):
         self.toolbar.addWidget(self.search_bar)
         self.change_layout = QHBoxLayout()
         self.change_lbl = QLabel()
-        self.change_progress = QMovie(str(assets_folder() / "loading-anim.gif"),
-                                      parent=self.change_lbl)
+        self.change_progress = QMovie(
+            str(assets_folder() / "loading-anim.gif"), parent=self.change_lbl
+        )
         print(self.change_progress.fileName())
         self.change_lbl.setMovie(self.change_progress)
-        self.change_progress.setScaledSize(QSize(32,32))
+        self.change_progress.setScaledSize(QSize(32, 32))
         self.change_layout.addWidget(self.change_lbl)
 
         self.content_layout.addWidget(self.toolbar)
@@ -147,9 +148,7 @@ class Window(MainWindow):
                 data = glob.irods_session.data_objects.get(
                     posixpath.join(self.path, item.text())
                 )
-                self.detail_dock.update_info(
-                    item.text(), data
-                )
+                self.detail_dock.update_info(item.text(), data)
         except AttributeError as e:
             print(e)
 
@@ -167,8 +166,11 @@ class Window(MainWindow):
         self.list_widget.clear()
         self.details.clear()
         thread = ChangeFolderThread(
-            self.list_widget, self.path, self.folder_icon, self.file_icon,
-            self.change_lbl
+            self.list_widget,
+            self.path,
+            self.folder_icon,
+            self.file_icon,
+            self.change_lbl,
         )
         thread.signals.show_change.connect(self.show_change)
         thread.signals.hide_change.connect(self.hide_change)
@@ -183,7 +185,6 @@ class Window(MainWindow):
     def hide_change(self):
         self.change_lbl.hide()
         self.change_progress.stop()
-
 
     @staticmethod
     def open_file(filepath):
@@ -339,7 +340,10 @@ class Window(MainWindow):
     def download_finished(self, msg):
         if self.settings.value("notifications", defaultValue="true") == "true":
             self.tray_icon.showMessage(
-                f"{glob.app_name}", f"{msg} downloaded", QSystemTrayIcon.Information, 2000
+                f"{glob.app_name}",
+                f"{msg} downloaded",
+                QSystemTrayIcon.Information,
+                2000,
             )
 
     def delete_bar(self, item):

@@ -15,10 +15,10 @@ class WorkerSignalsMsg(QObject):
     delete_bar = Signal(str, name="delete_bar")
     workerMessage = Signal(str, name="workerMessage")
 
+
 class ChangeSignals(QObject):
     hide_change = Signal(name="hide_change")
     show_change = Signal(name="show_change")
-
 
 
 class ChangeFolderThread(QThread):
