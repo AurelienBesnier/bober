@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="uk_UA">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>main</name>
     <message>
         <source>Quitting application</source>
-        <translation>Заява про звільнення</translation>
+        <translation>Заявление об уходе</translation>
     </message>
 </context>
 
@@ -13,7 +13,7 @@
     <name>detail</name>
     <message>
         <source>File Details</source>
-        <translation>Інформація про файл</translation>
+        <translation>Детали файла</translation>
     </message>
     <message>
         <source>File: </source>
@@ -21,23 +21,23 @@
     </message>
     <message>
         <source>Replicas: </source>
-        <translation>Репліки: </translation>
+        <translation>Реплики: </translation>
     </message>
     <message>
         <source>Collection: </source>
-        <translation>Колекція: </translation>
+        <translation>Коллекция: </translation>
     </message>
     <message>
         <source>Creation time: </source>
-        <translation>Час створення: </translation>
+        <translation>Время создания: </translation>
     </message>
     <message>
         <source>Modified time: </source>
-        <translation>Модифікований час: </translation>
+        <translation>Модифицированное время: </translation>
     </message>
     <message>
         <source>Size: </source>
-        <translation>Розмір: </translation>
+        <translation>Размер: </translation>
     </message>
 </context>
 <context>
@@ -48,27 +48,27 @@
     </message>
     <message>
         <source>Filter...</source>
-        <translation>Фільтр...</translation>
+        <translation>Фильтр...</translation>
     </message>
     <message>
         <source>Explorer</source>
-        <translation>Експлорер</translation>
+        <translation>Проводник</translation>
     </message>
     <message>
         <source>Application Started</source>
-        <translation>Додаток запущено</translation>
+        <translation>Начало применения</translation>
     </message>
     <message>
         <source>logged in</source>
-        <translation>увійшли</translation>
+        <translation>вошедший</translation>
     </message>
     <message>
         <source>Open File</source>
-        <translation>Відкрити файл</translation>
+        <translation>Открыть файл</translation>
     </message>
     <message>
         <source>Permission denied.</source>
-        <translation>У дозволі відмовлено.</translation>
+        <translation>Разрешение отклонено.</translation>
     </message>
     <message>
         <source>File</source>
@@ -76,65 +76,65 @@
     </message>
     <message>
         <source>Login</source>
-        <translation>Логін</translation>
+        <translation>Логин</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation>Оновити</translation>
+        <translation>Обновить</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation>Виходь</translation>
+        <translation>Выход</translation>
     </message>
     <message>
         <source>Edit</source>
-        <translation>Змінити</translation>
+        <translation>Редактировать</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation>Параметри</translation>
+        <translation>настройки</translation>
     </message>
     <message>
         <source>About</source>
-        <translation>Про</translation>
+        <translation>О сайте</translation>
     </message>
     <message>
         <source>Help</source>
-        <translation>Допоможіть</translation>
+        <translation>Помощь</translation>
     </message>
     <message>
         <source>About Qt</source>
-        <translation>Про Qt</translation>
+        <translation>О сайте Qt</translation>
     </message>
     <message>
         <source>Download</source>
-        <translation>Завантажити</translation>
+        <translation>Скачать</translation>
     </message>
     <message>
         <source>Save to folder</source>
-        <translation>Зберегти в папку</translation>
+        <translation>Сохранить в папке</translation>
     </message>
     <message>
         <source>downloaded</source>
-        <translation>завантажено</translation>
+        <translation>загружено</translation>
     </message>
 
     <!--Help texts-->
     <message>
         <source>Welcome to </source>
-        <translation>Ласкаво просимо на </translation>
+        <translation>Добро пожаловать на </translation>
     </message>
     <message>
         <source>Before doing anything, please be sure to update the settings of the application. To do this, go to 'Edit'->'Settings'.</source>
-        <translation>Перш ніж щось робити, будь ласка, переконайтеся, що ви оновили налаштування програми. Для цього перейдіть в «Редагувати»->«Налаштування».</translation>
+        <translation>Прежде чем что-то делать, пожалуйста, обновите настройки приложения. Для этого перейдите в меню 'Редактировать'->'Настройки'.</translation>
     </message>
     <message>
         <source>Then, you can login with the login window dialog. Go to 'File'->'Login'.</source>
-        <translation>Після цього ви можете увійти до системи за допомогою діалогового вікна входу. Перейдіть до «Файл»->«Логін».</translation>
+        <translation>Затем вы можете войти в систему с помощью диалогового окна входа. Перейдите в меню 'Файл'->'Логин'.</translation>
     </message>
     <message>
         <source>Once logged in you can enjoy browsing your irods instance like a regular system file explorer. You can also download those file be right-clicking and hitting the 'Download' button.</source>
-        <translation>Увійшовши в систему, ви можете переглядати свій екземпляр irods як звичайний провідник системних файлів. Ви також можете завантажити ці файли, клацнувши правою кнопкою миші і натиснувши кнопку «Завантажити».</translation>
+        <translation>После входа в систему вы можете просматривать экземпляры irods, как в обычном проводнике системных файлов. Вы также можете загрузить эти файлы, щелкнув правой кнопкой мыши и нажав кнопку «Загрузить».</translation>
     </message>
 
 </context>
@@ -142,15 +142,15 @@
     <name>settings</name>
     <message>
         <source>Settings</source>
-        <translation>Параметри</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <source>Config path:</source>
-        <translation>Шлях до конфігурації:</translation>
+        <translation>Путь конфигурации:</translation>
     </message>
     <message>
         <source>Host:</source>
-        <translation>Господар:</translation>
+        <translation>Хозяин:</translation>
     </message>
     <message>
         <source>Port:</source>
@@ -162,45 +162,45 @@
     </message>
     <message>
         <source>Root path:</source>
-        <translation>Кореневий шлях:</translation>
+        <translation>Корневой путь:</translation>
     </message>
     <message>
         <source>Download notifications:</source>
-        <translation>Завантажити сповіщення:</translation>
+        <translation>Уведомления о загрузке:</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Зберегти</translation>
+        <translation>Сохранить</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Скасувати</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <source>Select irods configuration</source>
-        <translation>Виберіть конфігурацію irods</translation>
+        <translation>Выберите конфигурацию irods</translation>
     </message>
 </context>
 <context>
     <name>progress</name>
     <message>
         <source>Download progress</source>
-        <translation>Прогрес завантаження</translation>
+        <translation>Прогресс загрузки</translation>
     </message>
 </context>
 <context>
     <name>login</name>
     <message>
         <source>Login</source>
-        <translation>Логін</translation>
+        <translation>Логин</translation>
     </message>
     <message>
         <source>Confirm</source>
-        <translation>Підтвердити</translation>
+        <translation>Подтвердите</translation>
     </message>
     <message>
         <source>Username: </source>
-        <translation>Користувач: </translation>
+        <translation>Пользователь: </translation>
     </message>
     <message>
         <source>Password: </source>
@@ -211,7 +211,7 @@
     <name>worker</name>
     <message>
         <source>does not exist</source>
-        <translation>не існує</translation>
+        <translation>не существует</translation>
     </message>
 </context>
 </TS>
