@@ -1,6 +1,6 @@
 import irods
 from irods.session import iRODSSession
-from qtpy.QtCore import QSettings
+from qtpy.QtCore import QSettings, QCoreApplication
 from qtpy.QtWidgets import QDialog, QFormLayout, QLineEdit, QMessageBox, QPushButton
 
 import bober.globals as glob
@@ -9,17 +9,25 @@ import bober.globals as glob
 class LoginWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setWindowTitle(f"{glob.app_name} - Login")
+        self.setWindowTitle(
+            f"{glob.app_name} - " + QCoreApplication.translate("login", "Login")
+        )
         self.settings = QSettings()
 
         self.layout = QFormLayout(self)
         self.username_edit = QLineEdit(self)
         self.password_edit = QLineEdit(self)
         self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.confirm_button = QPushButton("Confirm", self)
+        self.confirm_button = QPushButton(
+            QCoreApplication.translate("login", "Confirm"), self
+        )
         self.confirm_button.clicked.connect(self.login)
-        self.layout.addRow("Username: ", self.username_edit)
-        self.layout.addRow("Password: ", self.password_edit)
+        self.layout.addRow(
+            QCoreApplication.translate("login", "Username: "), self.username_edit
+        )
+        self.layout.addRow(
+            QCoreApplication.translate("login", "Password: "), self.password_edit
+        )
         self.layout.addRow(self.confirm_button)
         self.adjustSize()
 
@@ -57,15 +65,15 @@ class LoginWindow(QDialog):
         except irods.exception.NetworkException as e:
             print(e)
             msgbox = QMessageBox()
-            msgbox.setWindowTitle("Login")
-            msgbox.setText("<p>Network Error.</p>" f"<p>{e}</p>")
+            msgbox.setWindowTitle(QCoreApplication.translate("login", "Login"))
+            msgbox.setText(f"<p>Network Error.</p><p>{e}</p>")
             msgbox.setIcon(QMessageBox.Icon.Critical)
             msgbox.exec()
             return
         except irods.exception.CAT_INVALID_USER as e:
             print(e)
             msgbox = QMessageBox()
-            msgbox.setWindowTitle("Login")
+            msgbox.setWindowTitle(QCoreApplication.translate("login", "Login"))
             msgbox.setText("<p>Invalid user name.</p>")
             msgbox.setIcon(QMessageBox.Icon.Warning)
             msgbox.exec()
@@ -73,7 +81,7 @@ class LoginWindow(QDialog):
         except irods.exception.CAT_INVALID_AUTHENTICATION as e:
             print(e)
             msgbox = QMessageBox()
-            msgbox.setWindowTitle("Login")
+            msgbox.setWindowTitle(QCoreApplication.translate("login", "Login"))
             msgbox.setText("<p>Invalid authentication.</p>")
             msgbox.setIcon(QMessageBox.Icon.Warning)
             msgbox.exec()
@@ -81,7 +89,7 @@ class LoginWindow(QDialog):
         except TypeError as e:
             print(e)
             msgbox = QMessageBox()
-            msgbox.setWindowTitle("Login")
+            msgbox.setWindowTitle(QCoreApplication.translate("login", "Login"))
             msgbox.setText("<p>Type Error: Did you set the settings correctly ?</p>")
             msgbox.setIcon(QMessageBox.Icon.Critical)
             msgbox.exec()

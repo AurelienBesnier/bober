@@ -1,6 +1,6 @@
 import json
 
-from qtpy.QtCore import QSettings, QStandardPaths, Qt
+from qtpy.QtCore import QSettings, QStandardPaths, Qt, QCoreApplication
 from qtpy.QtGui import QIntValidator
 from qtpy.QtWidgets import (
     QFileDialog,
@@ -19,22 +19,26 @@ class SettingsWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.settings = QSettings()
-        self.setWindowTitle(f"{glob.app_name} - Settings")
+        self.setWindowTitle(
+            f"{glob.app_name} - " + QCoreApplication.translate("settings", "Settings")
+        )
         self.layout = QGridLayout(self)
 
         # Widgets
-        self.cfg_label = QLabel("Config path:")
+        self.cfg_label = QLabel(QCoreApplication.translate("settings", "Config path:"))
         self.cfg_edit = QLineEdit()
-        self.host_label = QLabel("Host:")
+        self.host_label = QLabel(QCoreApplication.translate("settings", "Host:"))
         self.host_edit = QLineEdit()
-        self.port_label = QLabel("Port:")
+        self.port_label = QLabel(QCoreApplication.translate("settings", "Port:"))
         self.port_edit = QLineEdit()
         self.port_edit.setValidator(QIntValidator(0, 9999999))
-        self.zone_label = QLabel("Zone:")
+        self.zone_label = QLabel(QCoreApplication.translate("settings", "Zone:"))
         self.zone_edit = QLineEdit()
-        self.root_label = QLabel("Root path:")
+        self.root_label = QLabel(QCoreApplication.translate("settings", "Root path:"))
         self.root_edit = QLineEdit()
-        self.notification_label = QLabel("Download notifications:")
+        self.notification_label = QLabel(
+            QCoreApplication.translate("settings", "Download notifications:")
+        )
         self.notification_check = QCheckBox()
 
         # Settings
@@ -58,10 +62,12 @@ class SettingsWindow(QWidget):
         elif self.notifications == "true":
             self.notification_check.setChecked(True)
 
-        self.save_button = QPushButton("Save")
+        self.save_button = QPushButton(QCoreApplication.translate("settings", "Save"))
         self.save_button.clicked.connect(self.save)
 
-        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button = QPushButton(
+            QCoreApplication.translate("settings", "Cancel")
+        )
         self.cancel_button.clicked.connect(self.close)
 
         # Adding Widgets
@@ -97,7 +103,7 @@ class SettingsWindow(QWidget):
         print(home_folder)
         self.config_location = QFileDialog.getOpenFileUrl(
             self,
-            "Select irods configuration",
+            QCoreApplication.translate("settings", "Select irods configuration"),
             dir=home_folder,
             filter="config files (*.json)",
         )[0].toLocalFile()

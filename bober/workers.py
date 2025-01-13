@@ -3,7 +3,7 @@ import posixpath
 import traceback
 
 from irods.exception import CAT_NO_ROWS_FOUND, CollectionDoesNotExist
-from qtpy.QtCore import QObject, QThread, Signal
+from qtpy.QtCore import QObject, QThread, Signal, QCoreApplication
 from qtpy.QtWidgets import QListWidgetItem
 
 import bober.globals as glob
@@ -84,7 +84,7 @@ class DownloadThread(QThread):
             except CAT_NO_ROWS_FOUND as e:
                 print(e)
             except CollectionDoesNotExist:
-                print(f"{irods_path} does not exist")
+                print(f"{irods_path} "+QCoreApplication.translate("worker", "does not exist"))
 
         except Exception as e:
             print(e, flush=True)

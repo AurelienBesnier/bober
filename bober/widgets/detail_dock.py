@@ -1,4 +1,4 @@
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, QCoreApplication
 from qtpy.QtWidgets import (
     QDockWidget,
     QFormLayout,
@@ -7,6 +7,7 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
 
 import datetime
 
@@ -29,7 +30,9 @@ class DetailDock(QDockWidget):
         )
         self.content = QWidget()
         self.content_layout = QVBoxLayout(self.content)
-        self.group_detail = QGroupBox("File Details")
+        self.group_detail = QGroupBox(
+            QCoreApplication.translate("detail", "File Details")
+        )
         self.content_layout.addWidget(self.group_detail)
         self.layout_detail = QFormLayout(self.group_detail)
         self.filename = QLabel(self)
@@ -53,12 +56,24 @@ class DetailDock(QDockWidget):
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
 
-        self.layout_detail.addRow("File name: ", self.filename)
-        self.layout_detail.addRow("Replicas: ", self.replicas)
-        self.layout_detail.addRow("Collection: ", self.coll)
-        self.layout_detail.addRow("Creation time: ", self.create_time)
-        self.layout_detail.addRow("Modified time: ", self.modify_time)
-        self.layout_detail.addRow("Size: ", self.size)
+        self.layout_detail.addRow(
+            QCoreApplication.translate("detail", "File: "), self.filename
+        )
+        self.layout_detail.addRow(
+            QCoreApplication.translate("detail", "Replicas: "), self.replicas
+        )
+        self.layout_detail.addRow(
+            QCoreApplication.translate("detail", "Collection: "), self.coll
+        )
+        self.layout_detail.addRow(
+            QCoreApplication.translate("detail", "Creation time: "), self.create_time
+        )
+        self.layout_detail.addRow(
+            QCoreApplication.translate("detail", "Modified time: "), self.modify_time
+        )
+        self.layout_detail.addRow(
+            QCoreApplication.translate("detail", "Size: "), self.size
+        )
         self.setWidget(self.content)
 
     def update_info(self, filename, data) -> None:

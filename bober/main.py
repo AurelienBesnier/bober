@@ -11,6 +11,7 @@ from bober.version import __version__
 from bober.windows.window import Window
 from qtpy.QtCore import QTranslator
 
+
 def quit_application():
     print(QCoreApplication.translate("main", "Quitting application"))
     sys.exit(app.exit())
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     app.setApplicationVersion(__version__)
     translator = QTranslator()
     if translator.load(QLocale(), "", "", str(assets_folder() / "i18n")):
-        print(f"Found translation for {QLocale()}")
+        print(f"Found translation for {QLocale().language()}")
         QCoreApplication.installTranslator(translator)
     settings = QSettings()
     win = Window()
