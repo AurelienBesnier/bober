@@ -26,7 +26,9 @@ class ProgressDock(QDockWidget):
         self.scroll_area.setWidgetResizable(True)
         # self.groupWdg.resize(500, 100)
 
-        self.content_layout.addWidget(QLabel(QCoreApplication.translate("progress", "Download progress")))
+        self.content_layout.addWidget(
+            QLabel(QCoreApplication.translate("progress", "Download progress"))
+        )
         self.content_layout.addWidget(self.scroll_area)
 
         self.setWidget(self.content)

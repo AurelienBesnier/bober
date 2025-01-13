@@ -84,7 +84,10 @@ class DownloadThread(QThread):
             except CAT_NO_ROWS_FOUND as e:
                 print(e)
             except CollectionDoesNotExist:
-                print(f"{irods_path} "+QCoreApplication.translate("worker", "does not exist"))
+                print(
+                    f"{irods_path} "
+                    + QCoreApplication.translate("worker", "does not exist")
+                )
 
         except Exception as e:
             print(e, flush=True)

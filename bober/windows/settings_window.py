@@ -16,7 +16,8 @@ from qtpy.QtWidgets import (
 
 import bober.globals as glob
 
-locales = ['en_US', 'fr_FR', 'es_ES', 'de_DE', 'uk_UA', 'ru_RU']
+locales = ["en_US", "fr_FR", "es_ES", "de_DE", "uk_UA", "ru_RU"]
+
 
 class SettingsWindow(QWidget):
     def __init__(self, parent=None):
@@ -156,7 +157,12 @@ class SettingsWindow(QWidget):
         if self.settings.value("locale") != self.locale_box.currentText():
             msgbox = QMessageBox()
             msgbox.setWindowTitle(QCoreApplication.translate("settings", "Settings"))
-            msgbox.setText(QCoreApplication.translate("settings", "Please restart the application to change the localisation."))
+            msgbox.setText(
+                QCoreApplication.translate(
+                    "settings",
+                    "Please restart the application to change the localisation.",
+                )
+            )
             msgbox.setIcon(QMessageBox.Icon.Information)
             msgbox.exec()
         self.settings.setValue("locale", self.locale_box.currentText())
