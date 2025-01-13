@@ -1,6 +1,7 @@
 import json
 
-from qtpy.QtCore import QSettings, QStandardPaths, Qt
+from PySide6.QtWidgets import QMessageBox
+from qtpy.QtCore import QSettings, QStandardPaths, Qt, QCoreApplication
 from qtpy.QtGui import QIntValidator
 from qtpy.QtWidgets import (
     QFileDialog,
@@ -9,33 +10,44 @@ from qtpy.QtWidgets import (
     QLineEdit,
     QPushButton,
     QWidget,
-    QCheckBox
+    QCheckBox,
+    QComboBox,
 )
 
 import bober.globals as glob
+
+locales = ["en_US", "fr_FR", "es_ES", "de_DE", "uk_UA", "ru_RU"]
 
 
 class SettingsWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.settings = QSettings()
-        self.setWindowTitle(f"{glob.app_name} - Settings")
+        self.setWindowTitle(
+            f"{glob.app_name} - " + QCoreApplication.translate("settings", "Settings")
+        )
         self.layout = QGridLayout(self)
 
         # Widgets
-        self.cfg_label = QLabel("Config path:")
+        self.cfg_label = QLabel(QCoreApplication.translate("settings", "Config path:"))
         self.cfg_edit = QLineEdit()
-        self.host_label = QLabel("Host:")
+        self.host_label = QLabel(QCoreApplication.translate("settings", "Host:"))
         self.host_edit = QLineEdit()
-        self.port_label = QLabel("Port:")
+        self.port_label = QLabel(QCoreApplication.translate("settings", "Port:"))
         self.port_edit = QLineEdit()
         self.port_edit.setValidator(QIntValidator(0, 9999999))
-        self.zone_label = QLabel("Zone:")
+        self.zone_label = QLabel(QCoreApplication.translate("settings", "Zone:"))
         self.zone_edit = QLineEdit()
-        self.root_label = QLabel("Root path:")
+        self.root_label = QLabel(QCoreApplication.translate("settings", "Root path:"))
         self.root_edit = QLineEdit()
-        self.notification_label = QLabel("Download notifications:")
+        self.notification_label = QLabel(
+            QCoreApplication.translate("settings", "Download notifications:")
+        )
         self.notification_check = QCheckBox()
+
+        self.locale_label = QLabel(QCoreApplication.translate("settings", "Locale:"))
+        self.locale_box = QComboBox()
+        self.locale_box.addItems(locales)
 
         # Settings
         self.config_location = self.settings.value("config_path", defaultValue="")
@@ -58,10 +70,12 @@ class SettingsWindow(QWidget):
         elif self.notifications == "true":
             self.notification_check.setChecked(True)
 
-        self.save_button = QPushButton("Save")
+        self.save_button = QPushButton(QCoreApplication.translate("settings", "Save"))
         self.save_button.clicked.connect(self.save)
 
-        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button = QPushButton(
+            QCoreApplication.translate("settings", "Cancel")
+        )
         self.cancel_button.clicked.connect(self.close)
 
         # Adding Widgets
@@ -84,8 +98,11 @@ class SettingsWindow(QWidget):
         self.layout.addWidget(self.notification_label, 5, 0)
         self.layout.addWidget(self.notification_check, 5, 1, 1, 2)
 
-        self.layout.addWidget(self.save_button, 6, 0)
-        self.layout.addWidget(self.cancel_button, 6, 1, 1, 2)
+        self.layout.addWidget(self.locale_label, 6, 0)
+        self.layout.addWidget(self.locale_box, 6, 1, 1, 2)
+
+        self.layout.addWidget(self.save_button, 7, 0)
+        self.layout.addWidget(self.cancel_button, 7, 1, 1, 2)
 
     def select_cfg(self) -> None:
         """
@@ -97,7 +114,7 @@ class SettingsWindow(QWidget):
         print(home_folder)
         self.config_location = QFileDialog.getOpenFileUrl(
             self,
-            "Select irods configuration",
+            QCoreApplication.translate("settings", "Select irods configuration"),
             dir=home_folder,
             filter="config files (*.json)",
         )[0].toLocalFile()
@@ -137,6 +154,19 @@ class SettingsWindow(QWidget):
         self.settings.setValue("zone", self.zone_edit.text())
         self.settings.setValue("root_path", self.root_edit.text())
         self.settings.setValue("notifications", self.notification_check.isChecked())
+        if self.settings.value("locale") != self.locale_box.currentText():
+            msgbox = QMessageBox()
+            msgbox.setWindowTitle(QCoreApplication.translate("settings", "Settings"))
+            msgbox.setText(
+                QCoreApplication.translate(
+                    "settings",
+                    "Please restart the application to change the localisation.",
+                )
+            )
+            msgbox.setIcon(QMessageBox.Icon.Information)
+            msgbox.exec()
+        self.settings.setValue("locale", self.locale_box.currentText())
+
         self.close()
 
     def keyPressEvent(self, event, **kwargs):

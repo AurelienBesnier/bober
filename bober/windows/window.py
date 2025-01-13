@@ -3,9 +3,8 @@ import posixpath
 import sys
 
 from irods.exception import CAT_NO_ACCESS_PERMISSION, OVERWRITE_WITHOUT_FORCE_FLAG
-from irods.models import DataObject
-from qtpy.QtCore import QSettings, QStandardPaths, Qt, QUrl, QSize
-from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence,QMovie
+from qtpy.QtCore import QSettings, QStandardPaths, Qt, QUrl, QSize, QCoreApplication
+from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence, QMovie
 from qtpy.QtWidgets import (
     QAbstractItemView,
     QAction,
@@ -23,7 +22,7 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QWidget,
-    QLabel
+    QLabel,
 )
 
 import bober.globals as glob
@@ -48,7 +47,9 @@ class Window(MainWindow):
         self.content = QWidget(self)
         self.content_layout = QVBoxLayout(self.content)
         self.toolbar = QToolBar(self)
-        self.back_button = QPushButton("Back", self)
+        self.back_button = QPushButton(
+            QCoreApplication.translate("window", "Back"), self
+        )
         self.back_button.setIcon(
             self.style().standardIcon(QStyle.StandardPixmap.SP_ArrowBack)
         )
@@ -64,11 +65,12 @@ class Window(MainWindow):
         self.toolbar.addWidget(self.search_bar)
         self.change_layout = QHBoxLayout()
         self.change_lbl = QLabel()
-        self.change_progress = QMovie(str(assets_folder() / "loading-anim.gif"),
-                                      parent=self.change_lbl)
+        self.change_progress = QMovie(
+            str(assets_folder() / "loading-anim.gif"), parent=self.change_lbl
+        )
         print(self.change_progress.fileName())
         self.change_lbl.setMovie(self.change_progress)
-        self.change_progress.setScaledSize(QSize(32,32))
+        self.change_progress.setScaledSize(QSize(32, 32))
         self.change_layout.addWidget(self.change_lbl)
 
         self.content_layout.addWidget(self.toolbar)
@@ -80,7 +82,9 @@ class Window(MainWindow):
         self.list_widget.setSelectionMode(
             QAbstractItemView.SelectionMode.ExtendedSelection
         )
-        self.tab_widget.addTab(self.list_widget, "Explorer")
+        self.tab_widget.addTab(
+            self.list_widget, QCoreApplication.translate("window", "Explorer")
+        )
         self.detail_dock = DetailDock()
         self.detail_dock.hide()
         self.progress_dock = ProgressDock()
@@ -108,7 +112,9 @@ class Window(MainWindow):
         self.setCentralWidget(self.content)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.detail_dock)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.progress_dock)
-        self.set_status_bar_message("Application Started", 3000)
+        self.set_status_bar_message(
+            QCoreApplication.translate("window", "Application Started"), 3000
+        )
 
     def change_filter(self, pattern):
         for row in range(self.list_widget.count()):
@@ -129,7 +135,9 @@ class Window(MainWindow):
 
     def login(self):
         if self.login_window.exec() == QDialog.Accepted:
-            self.set_status_bar_message("logged in", 5000)
+            self.set_status_bar_message(
+                QCoreApplication.translate("window", "logged in"), 5000
+            )
             self.root = self.settings.value("root_path")
             self.path = self.root
             self.change_folder()
@@ -140,16 +148,14 @@ class Window(MainWindow):
                 if self.detail_dock.isHidden():
                     self.detail_dock.show()
                 print(posixpath.join(self.path, item.text()))
-                meta = glob.irods_session.metadata.get(
-                    DataObject, posixpath.join(self.path, item.text())
-                )
-                print(meta)
+                # meta = glob.irods_session.metadata.get(
+                #     DataObject, posixpath.join(self.path, item.text())
+                # )
+                # print(meta)
                 data = glob.irods_session.data_objects.get(
                     posixpath.join(self.path, item.text())
                 )
-                self.detail_dock.update_info(
-                    item.text(), data.replicas, data.collection, data.size
-                )
+                self.detail_dock.update_info(item.text(), data)
         except AttributeError as e:
             print(e)
 
@@ -167,8 +173,11 @@ class Window(MainWindow):
         self.list_widget.clear()
         self.details.clear()
         thread = ChangeFolderThread(
-            self.list_widget, self.path, self.folder_icon, self.file_icon,
-            self.change_lbl
+            self.list_widget,
+            self.path,
+            self.folder_icon,
+            self.file_icon,
+            self.change_lbl,
         )
         thread.signals.show_change.connect(self.show_change)
         thread.signals.hide_change.connect(self.hide_change)
@@ -183,7 +192,6 @@ class Window(MainWindow):
     def hide_change(self):
         self.change_lbl.hide()
         self.change_progress.stop()
-
 
     @staticmethod
     def open_file(filepath):
@@ -204,8 +212,12 @@ class Window(MainWindow):
             print("file already there")
         except CAT_NO_ACCESS_PERMISSION:
             msgbox = QMessageBox()
-            msgbox.setWindowTitle("Open File")
-            msgbox.setText("<p>Permission denied.</p>")
+            msgbox.setWindowTitle(QCoreApplication.translate("window", "Open File"))
+            msgbox.setText(
+                "<p>"
+                + QCoreApplication.translate("window", "Permission denied.")
+                + "</p>"
+            )
             msgbox.setIcon(QMessageBox.Icon.Critical)
             msgbox.exec()
             return
@@ -223,16 +235,22 @@ class Window(MainWindow):
             QStyle.StandardPixmap.SP_ToolBarVerticalExtensionButton
         )
         # File Menu
-        file_menu = QMenu("File", self)
-        login_action = QAction(login_icon, "Login", self)
+        file_menu = QMenu(QCoreApplication.translate("window", "File"), self)
+        login_action = QAction(
+            login_icon, QCoreApplication.translate("window", "Login"), self
+        )
         login_action.triggered.connect(self.login)
         login_action.setShortcut(QKeySequence.StandardKey.Open)
 
-        refresh_action = QAction(refresh_icon, "Refresh", self)
+        refresh_action = QAction(
+            refresh_icon, QCoreApplication.translate("window", "Refresh"), self
+        )
         refresh_action.triggered.connect(self.change_folder)
         refresh_action.setShortcut(QKeySequence.StandardKey.Refresh)
 
-        quit_action = QAction(quit_icon, "Quit", self)
+        quit_action = QAction(
+            quit_icon, QCoreApplication.translate("window", "Quit"), self
+        )
         quit_action.triggered.connect(self.close)
         quit_action.setShortcut(QKeySequence.StandardKey.Quit)
         file_menu.addAction(login_action)
@@ -241,27 +259,37 @@ class Window(MainWindow):
         file_menu.addAction(quit_action)
 
         # Edit Menu
-        edit_menu = QMenu("Edit", self)
-        settings_action = QAction("Settings...", self)
+        edit_menu = QMenu(QCoreApplication.translate("window", "Edit"), self)
+        settings_action = QAction(
+            QCoreApplication.translate("window", "Settings"), self
+        )
         settings_action.triggered.connect(self.edit_settings)
         edit_menu.addAction(settings_action)
 
         # About/Help Menu
-        about_menu = QMenu("About", self)
-        help_action = QAction("Help", self)
+        about_menu = QMenu(QCoreApplication.translate("window", "About"), self)
+        help_action = QAction(QCoreApplication.translate("window", "Help"), self)
         help_action.triggered.connect(self.help)
         help_action.setShortcut(QKeySequence.StandardKey.HelpContents)
-        about_action = QAction("About", self)
+        about_action = QAction(QCoreApplication.translate("window", "About"), self)
         about_action.triggered.connect(self.about)
-        about_qt_action = QAction(qt_icon, "About Qt", self)
-        about_qt_action.triggered.connect(lambda: QMessageBox.aboutQt(self, "About Qt"))
+        about_qt_action = QAction(
+            qt_icon, QCoreApplication.translate("window", "About Qt"), self
+        )
+        about_qt_action.triggered.connect(
+            lambda: QMessageBox.aboutQt(
+                self, QCoreApplication.translate("window", "About Qt")
+            )
+        )
         about_menu.addAction(help_action)
         about_menu.addSeparator()
         about_menu.addAction(about_action)
         about_menu.addAction(about_qt_action)
 
         # Download menu
-        download_action = QAction(dl_icon, "Download", self)
+        download_action = QAction(
+            dl_icon, QCoreApplication.translate("window", "Download"), self
+        )
         download_action.triggered.connect(self.download)
         self.menu.addAction(download_action)
 
@@ -272,16 +300,33 @@ class Window(MainWindow):
 
     def help(self):
         msg_box = QMessageBox(self)
-        msg_box.setWindowTitle(f"{glob.app_name} - Help")
+        msg_box.setWindowTitle(
+            f"{glob.app_name} - " + QCoreApplication.translate("window", "Help")
+        )
         msg_box.setText(
             "<div style='text-align: center'>"
-            f"<h2>Welcome to {glob.app_name}!</h2>"
-            "<p>Before doing anything, please be sure to update the "
-            "settings of the application. To do this, go to 'Edit'->'Settings'.</p>"
-            "<p>Then, you can login with the login window dialog. Head to 'File'->'Login'</p>"
-            "Once logged in you can enjoy browsing your irods instance like a regular system file explorer. "
-            "You can also download those file be right-clicking and hitting the 'Download' button."
-            "</div>"
+            "<h2>"
+            + QCoreApplication.translate("window", "Welcome to ")
+            + f"{glob.app_name}!</h2>"
+            "<p>"
+            + QCoreApplication.translate(
+                "window",
+                "Before doing anything, please be sure to "
+                "update the settings of the application. To do this, go to 'Edit'->'Settings'.",
+            )
+            + "</p>"
+            "<p>"
+            + QCoreApplication.translate(
+                "window",
+                "Then, you can login with the login window dialog. Go to 'File'->'Login'.",
+            )
+            + "</p>"
+            + QCoreApplication.translate(
+                "window",
+                "Once logged in you can enjoy browsing your irods instance like a regular system file explorer. "
+                "You can also download those file be right-clicking and hitting the 'Download' button.",
+            )
+            + "</div>"
         )
         msg_box.setWindowModality(Qt.NonModal)
         msg_box.show()
@@ -289,7 +334,9 @@ class Window(MainWindow):
     @staticmethod
     def about():
         msg_box = QMessageBox()
-        msg_box.setWindowTitle(f"{glob.app_name} - About")
+        msg_box.setWindowTitle(
+            f"{glob.app_name} - " + QCoreApplication.translate("window", "About")
+        )
         msg_box.setText(
             "<div style='text-align: center'>"
             f"<h2>{glob.app_name}:</h2>"
@@ -310,7 +357,7 @@ class Window(MainWindow):
         )
         folder = QFileDialog.getExistingDirectory(
             self,
-            "Save to folder",
+            QCoreApplication.translate("window", "Save to folder"),
             directory=doc_folder,
             options=QFileDialog.Option.ShowDirsOnly,
         )
@@ -339,7 +386,10 @@ class Window(MainWindow):
     def download_finished(self, msg):
         if self.settings.value("notifications", defaultValue="true") == "true":
             self.tray_icon.showMessage(
-                f"{glob.app_name}", f"{msg} downloaded", QSystemTrayIcon.Information, 2000
+                f"{glob.app_name}",
+                f"{msg} " + QCoreApplication.translate("window", "downloaded"),
+                QSystemTrayIcon.Information,
+                2000,
             )
 
     def delete_bar(self, item):
