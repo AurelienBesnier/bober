@@ -16,7 +16,7 @@ from qtpy.QtWidgets import (
 
 import bober.globals as glob
 
-locales = ['en_US', 'es_ES', 'de_DE', 'uk_UA', 'ru_RU']
+locales = ['en_US', 'fr_FR', 'es_ES', 'de_DE', 'uk_UA', 'ru_RU']
 
 class SettingsWindow(QWidget):
     def __init__(self, parent=None):
