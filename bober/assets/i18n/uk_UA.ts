@@ -180,6 +180,14 @@
         <source>Select irods configuration</source>
         <translation>Виберіть конфігурацію irods</translation>
     </message>
+    <message>
+        <source>Locale:</source>
+        <translation>Локація:</translation>
+    </message>
+    <message>
+        <source>Please restart the application to change the localisation.</source>
+        <translation>Будь ласка, перезапустіть програму, щоб змінити локалізацію.</translation>
+    </message>
 </context>
 <context>
     <name>progress</name>

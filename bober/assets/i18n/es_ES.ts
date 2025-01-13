@@ -180,6 +180,15 @@
         <source>Select irods configuration</source>
         <translation>Seleccione la configuración de irods</translation>
     </message>
+
+    <message>
+        <source>Locale:</source>
+        <translation>Localización:</translation>
+    </message>
+    <message>
+        <source>Please restart the application to change the localisation.</source>
+        <translation>Reinicie la aplicación para cambiar la localización.</translation>
+    </message>
 </context>
 <context>
     <name>progress</name>

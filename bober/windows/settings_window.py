@@ -1,5 +1,6 @@
 import json
 
+from PySide6.QtWidgets import QMessageBox
 from qtpy.QtCore import QSettings, QStandardPaths, Qt, QCoreApplication
 from qtpy.QtGui import QIntValidator
 from qtpy.QtWidgets import (
@@ -10,10 +11,12 @@ from qtpy.QtWidgets import (
     QPushButton,
     QWidget,
     QCheckBox,
+    QComboBox,
 )
 
 import bober.globals as glob
 
+locales = ['en_US', 'es_ES', 'de_DE', 'uk_UA', 'ru_RU']
 
 class SettingsWindow(QWidget):
     def __init__(self, parent=None):
@@ -40,6 +43,10 @@ class SettingsWindow(QWidget):
             QCoreApplication.translate("settings", "Download notifications:")
         )
         self.notification_check = QCheckBox()
+
+        self.locale_label = QLabel(QCoreApplication.translate("settings", "Locale:"))
+        self.locale_box = QComboBox()
+        self.locale_box.addItems(locales)
 
         # Settings
         self.config_location = self.settings.value("config_path", defaultValue="")
@@ -90,8 +97,11 @@ class SettingsWindow(QWidget):
         self.layout.addWidget(self.notification_label, 5, 0)
         self.layout.addWidget(self.notification_check, 5, 1, 1, 2)
 
-        self.layout.addWidget(self.save_button, 6, 0)
-        self.layout.addWidget(self.cancel_button, 6, 1, 1, 2)
+        self.layout.addWidget(self.locale_label, 6, 0)
+        self.layout.addWidget(self.locale_box, 6, 1, 1, 2)
+
+        self.layout.addWidget(self.save_button, 7, 0)
+        self.layout.addWidget(self.cancel_button, 7, 1, 1, 2)
 
     def select_cfg(self) -> None:
         """
@@ -143,6 +153,14 @@ class SettingsWindow(QWidget):
         self.settings.setValue("zone", self.zone_edit.text())
         self.settings.setValue("root_path", self.root_edit.text())
         self.settings.setValue("notifications", self.notification_check.isChecked())
+        if self.settings.value("locale") != self.locale_box.currentText():
+            msgbox = QMessageBox()
+            msgbox.setWindowTitle(QCoreApplication.translate("settings", "Settings"))
+            msgbox.setText(QCoreApplication.translate("settings", "Please restart the application to change the localisation."))
+            msgbox.setIcon(QMessageBox.Icon.Information)
+            msgbox.exec()
+        self.settings.setValue("locale", self.locale_box.currentText())
+
         self.close()
 
     def keyPressEvent(self, event, **kwargs):
