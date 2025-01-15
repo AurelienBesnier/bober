@@ -56,7 +56,7 @@ class Window(MainWindow):
         self.back_button.clicked.connect(self.back_folder)
         self.back_button.setShortcut(QKeySequence.StandardKey.Back)
         self.search_bar = QLineEdit(self)
-        self.search_bar.setPlaceholderText("Filter...")
+        self.search_bar.setPlaceholderText(QCoreApplication.translate("window", "Filter..."))
         self.search_bar.textChanged.connect(
             lambda: self.change_filter(self.search_bar.text())
         )

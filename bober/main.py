@@ -25,10 +25,9 @@ if __name__ == "__main__":
     app.setApplicationVersion(__version__)
     settings = QSettings()
     user_local = str(settings.value("locale", defaultValue=""))
-    print(user_local)
     translator = QTranslator()
-    if translator.load(QLocale(user_local), "", "", str(assets_folder() / "i18n")):
-        print(f"Found translation for {QLocale().language()}")
+    locale = QLocale(user_local) if user_local != "" else QLocale()
+    if translator.load(locale, "", "", str(assets_folder() / "i18n")):
         QCoreApplication.installTranslator(translator)
     win = Window()
     win.show()

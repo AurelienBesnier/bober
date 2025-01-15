@@ -214,6 +214,11 @@
         <source>Password: </source>
         <translation>Пароль: </translation>
     </message>
+
+    <message>
+        <source>Remember username: </source>
+        <translation>Запомнить имя пользователя: </translation>
+    </message>
 </context>
 <context>
     <name>worker</name>
