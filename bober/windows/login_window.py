@@ -1,7 +1,14 @@
 import irods
 from irods.session import iRODSSession
 from qtpy.QtCore import QSettings, QCoreApplication
-from qtpy.QtWidgets import QDialog, QFormLayout, QLineEdit, QMessageBox, QPushButton
+from qtpy.QtWidgets import (
+    QDialog,
+    QFormLayout,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QCheckBox,
+)
 
 import bober.globals as glob
 
@@ -16,8 +23,14 @@ class LoginWindow(QDialog):
 
         self.layout = QFormLayout(self)
         self.username_edit = QLineEdit(self)
+        self.username_edit.setText(str(self.settings.value("save_user", defaultValue="")))
         self.password_edit = QLineEdit(self)
         self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.save_username = QCheckBox(self)
+        self.save_username.setChecked(
+            True if self.settings.value("save_user") != "" else False
+        )
+
         self.confirm_button = QPushButton(
             QCoreApplication.translate("login", "Confirm"), self
         )
@@ -28,6 +41,12 @@ class LoginWindow(QDialog):
         self.layout.addRow(
             QCoreApplication.translate("login", "Password: "), self.password_edit
         )
+
+        self.layout.addRow(
+            QCoreApplication.translate("login", "Remember username: "),
+            self.save_username,
+        )
+
         self.layout.addRow(self.confirm_button)
         self.adjustSize()
 
@@ -42,6 +61,10 @@ class LoginWindow(QDialog):
         host = self.settings.value("host")
         port = self.settings.value("port")
         zone = self.settings.value("zone")
+        if self.save_username.isChecked():
+            self.settings.setValue('save_user', self.username_edit.text())
+        else:
+            self.settings.setValue('save_user', "")
         ssl_options = {
             "irods_client_server_policy": "CS_NEG_REQUIRE",
             "irods_client_server_negotiation": "request_server_negotiation",

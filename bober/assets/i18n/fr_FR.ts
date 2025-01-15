@@ -214,6 +214,10 @@
         <source>Password: </source>
         <translation>Mot de passe: </translation>
     </message>
+    <message>
+        <source>Remember username: </source>
+        <translation>Se rappeler du nom d'utilisateur: </translation>
+    </message>
 </context>
 <context>
     <name>worker</name>
