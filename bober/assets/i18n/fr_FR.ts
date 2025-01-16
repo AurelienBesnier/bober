@@ -39,6 +39,10 @@
         <translation>Taille: </translation>
     </message>
     <message>
+        <source>Open</source>
+        <translation>Ouvrir</translation>
+    </message>
+    <message>
         <source>Download</source>
         <translation>Télécharger</translation>
     </message>

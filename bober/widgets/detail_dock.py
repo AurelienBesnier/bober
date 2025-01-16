@@ -1,3 +1,5 @@
+import posixpath
+
 from qtpy.QtCore import Qt, QCoreApplication
 from qtpy.QtWidgets import (
     QDockWidget,
@@ -59,8 +61,10 @@ class DetailDock(QDockWidget):
         self.download_button = QPushButton(
             QCoreApplication.translate("detail", "Download")
         )
-
         self.download_button.clicked.connect(parent.download)
+
+        self.open_button = QPushButton(QCoreApplication.translate("detail", "Open"))
+        self.open_button.clicked.connect(self.open_file)
 
         self.layout_detail.addRow(
             QCoreApplication.translate("detail", "File: "), self.filename
@@ -80,8 +84,14 @@ class DetailDock(QDockWidget):
         self.layout_detail.addRow(
             QCoreApplication.translate("detail", "Size: "), self.size
         )
+        self.layout_detail.addRow(self.open_button)
         self.layout_detail.addRow(self.download_button)
         self.setWidget(self.content)
+
+    def open_file(self):
+        self.parent().open_file(
+            posixpath.join(self.parent().path, self.filename.text())
+        )
 
     def update_info(self, filename, data) -> None:
         """

@@ -39,7 +39,10 @@
         <source>Size: </source>
         <translation>Größe: </translation>
     </message>
-
+    <message>
+        <source>Open</source>
+        <translation>Öffnen</translation>
+    </message>
     <message>
         <source>Download</source>
         <translation>Herunterladen</translation>

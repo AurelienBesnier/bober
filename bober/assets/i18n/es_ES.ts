@@ -41,6 +41,10 @@
     </message>
 
     <message>
+        <source>Open</source>
+        <translation>Abrir</translation>
+    </message>
+    <message>
         <source>Download</source>
         <translation>Descargar</translation>
     </message>

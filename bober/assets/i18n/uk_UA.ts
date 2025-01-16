@@ -40,6 +40,10 @@
         <translation>Розмір: </translation>
     </message>
     <message>
+        <source>Open</source>
+        <translation>Відкрити</translation>
+    </message>
+    <message>
         <source>Download</source>
         <translation>Завантажити</translation>
     </message>
