@@ -118,6 +118,10 @@
         <source>downloaded</source>
         <translation>descargado</translation>
     </message>
+    <message>
+        <source>Upload file</source>
+        <translation>Cargar archivo</translation>
+    </message>
 
     <!--Help texts-->
     <message>
@@ -226,6 +230,10 @@
     <message>
         <source>does not exist</source>
         <translation>no existe</translation>
+    </message>
+    <message>
+        <source>File already exists</source>
+        <translation>Archivo ya existente</translation>
     </message>
 </context>
 </TS>

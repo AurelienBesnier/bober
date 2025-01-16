@@ -117,6 +117,10 @@
         <source>downloaded</source>
         <translation>téléchargé</translation>
     </message>
+    <message>
+        <source>Upload file</source>
+        <translation>Téléverser fichier</translation>
+    </message>
 
     <!--Help texts-->
     <message>
@@ -224,6 +228,10 @@
     <message>
         <source>does not exist</source>
         <translation>n&apos;existe pas</translation>
+    </message>
+    <message>
+        <source>File already exists</source>
+        <translation>Le fichier existe déjà</translation>
     </message>
 </context>
 </TS>

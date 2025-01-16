@@ -118,6 +118,10 @@
         <source>downloaded</source>
         <translation>загружено</translation>
     </message>
+    <message>
+        <source>Upload file</source>
+        <translation>Загрузить файл</translation>
+    </message>
 
     <!--Help texts-->
     <message>
@@ -225,6 +229,10 @@
     <message>
         <source>does not exist</source>
         <translation>не существует</translation>
+    </message>
+    <message>
+        <source>File already exists</source>
+        <translation>Файл уже существует</translation>
     </message>
 </context>
 </TS>

@@ -33,7 +33,7 @@ from bober.widgets.progress_dock import ProgressDock
 from bober.windows.login_window import LoginWindow
 from bober.windows.main_window import MainWindow
 from bober.windows.settings_window import SettingsWindow
-from bober.workers import ChangeFolderThread, DownloadThread
+from bober.workers import ChangeFolderThread, DownloadThread, UploadThread
 
 
 class Window(MainWindow):
@@ -232,7 +232,10 @@ class Window(MainWindow):
         login_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_ComputerIcon)
         qt_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarMenuButton)
         dl_icon = self.style().standardIcon(
-            QStyle.StandardPixmap.SP_ToolBarVerticalExtensionButton
+            QStyle.StandardPixmap.SP_TitleBarUnshadeButton
+        )
+        ul_icon = self.style().standardIcon(
+            QStyle.StandardPixmap.SP_TitleBarShadeButton
         )
         # File Menu
         file_menu = QMenu(QCoreApplication.translate("window", "File"), self)
@@ -291,6 +294,12 @@ class Window(MainWindow):
             dl_icon, QCoreApplication.translate("window", "Download"), self
         )
         download_action.triggered.connect(self.download)
+        upload_action = QAction(
+            ul_icon, QCoreApplication.translate("window", "Upload file"), self
+        )
+        upload_action.triggered.connect(self.upload_file)
+
+        self.menu.addAction(upload_action)
         self.menu.addAction(download_action)
 
         # Add everything
@@ -349,6 +358,22 @@ class Window(MainWindow):
         )
         msg_box.exec()
 
+    def upload_file(self):
+        file = QFileDialog.getOpenFileName(
+            self,
+            QCoreApplication.translate("window", "Upload file"),
+        )[0]
+
+        print(file)
+        irods_path = posixpath.join(self.path, os.path.basename(file))
+        print(irods_path)
+
+        if file != "":
+            t = UploadThread(file, irods_path)
+            t.signals.workerMessage.connect(self.upload_finished_notify)
+            t.start()
+            self.threads.append(t)
+
     def download(self):
         doc_folder = str(
             QStandardPaths.writableLocation(
@@ -382,6 +407,15 @@ class Window(MainWindow):
                 t.signals.delete_bar.connect(self.delete_bar)
                 t.start()
                 self.threads.append(t)
+
+    def upload_finished_notify(self, msg):
+        if self.settings.value("notifications", defaultValue="true") == "true":
+            self.tray_icon.showMessage(
+                f"{glob.app_name}",
+                f"{msg} " + QCoreApplication.translate("window", "uploaded"),
+                QSystemTrayIcon.Information,
+                2000,
+            )
 
     def download_finished(self, msg):
         if self.settings.value("notifications", defaultValue="true") == "true":

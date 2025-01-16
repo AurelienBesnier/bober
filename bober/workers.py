@@ -54,6 +54,31 @@ class ChangeFolderThread(QThread):
         self.list_widget.sortItems()
         self.signals.hide_change.emit()
 
+class UploadThread(QThread):
+    def __init__(self, path, upload_targe):
+        super().__init__()
+        self.path = path
+        self.upload_target = upload_targe
+        self.signals = WorkerSignalsMsg()
+
+    def run(self) -> None:
+        try:
+            try:
+                # If collection
+                if glob.irods_session.collections.exists(self.upload_target):
+                    self.signals.error.emit(QCoreApplication.translate("worker", "File already exists"))
+                else:
+                    glob.irods_session.data_objects.put(self.path, self.upload_target)
+                self.signals.workerMessage.emit(self.path)
+            except CAT_NO_ROWS_FOUND as e:
+                print(e)
+        except Exception as e:
+            print(e, flush=True)
+            self.signals.error.emit(traceback.format_exc())
+        finally:
+            self.sleep(2)
+            self.signals.finished.emit()
+
 
 class DownloadThread(QThread):
     def __init__(self, path, download_target, folder, progress_bar):
