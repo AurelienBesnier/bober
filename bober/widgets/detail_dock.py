@@ -6,6 +6,7 @@ from qtpy.QtWidgets import (
     QLabel,
     QVBoxLayout,
     QWidget,
+    QPushButton,
 )
 
 
@@ -23,8 +24,8 @@ def sizeof_fmt(num, suffix="B"):
 
 
 class DetailDock(QDockWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setFeatures(
             QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable
         )
@@ -55,6 +56,11 @@ class DetailDock(QDockWidget):
         self.modify_time.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
+        self.download_button = QPushButton(
+            QCoreApplication.translate("detail", "Download")
+        )
+
+        self.download_button.clicked.connect(parent.download)
 
         self.layout_detail.addRow(
             QCoreApplication.translate("detail", "File: "), self.filename
@@ -74,6 +80,7 @@ class DetailDock(QDockWidget):
         self.layout_detail.addRow(
             QCoreApplication.translate("detail", "Size: "), self.size
         )
+        self.layout_detail.addRow(self.download_button)
         self.setWidget(self.content)
 
     def update_info(self, filename, data) -> None:

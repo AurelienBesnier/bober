@@ -54,6 +54,7 @@ class ChangeFolderThread(QThread):
         self.list_widget.sortItems()
         self.signals.hide_change.emit()
 
+
 class UploadThread(QThread):
     def __init__(self, path, upload_targe):
         super().__init__()
@@ -66,7 +67,9 @@ class UploadThread(QThread):
             try:
                 # If collection
                 if glob.irods_session.collections.exists(self.upload_target):
-                    self.signals.error.emit(QCoreApplication.translate("worker", "File already exists"))
+                    self.signals.error.emit(
+                        QCoreApplication.translate("worker", "File already exists")
+                    )
                 else:
                     glob.irods_session.data_objects.put(self.path, self.upload_target)
                 self.signals.workerMessage.emit(self.path)

@@ -39,6 +39,10 @@
         <source>Size: </source>
         <translation>Розмір: </translation>
     </message>
+    <message>
+        <source>Download</source>
+        <translation>Завантажити</translation>
+    </message>
 </context>
 <context>
     <name>window</name>

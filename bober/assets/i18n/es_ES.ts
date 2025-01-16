@@ -39,6 +39,11 @@
         <source>Size: </source>
         <translation>Talla: </translation>
     </message>
+
+    <message>
+        <source>Download</source>
+        <translation>Descargar</translation>
+    </message>
 </context>
 <context>
     <name>window</name>
