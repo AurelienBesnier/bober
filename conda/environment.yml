@@ -7,4 +7,5 @@ dependencies:
   - pyside6
   - qtpy
   - pillow
+  - natsort
   

@@ -241,5 +241,9 @@
         <source>File already exists</source>
         <translation>Le fichier existe déjà</translation>
     </message>
+    <message>
+        <source>You do not have the right to upload files</source>
+        <translation>Vous n'avez pas le droit de téléverser des fichiers</translation>
+    </message>
 </context>
 </TS>

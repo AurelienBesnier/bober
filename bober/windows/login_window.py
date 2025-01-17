@@ -1,13 +1,13 @@
 import irods
 from irods.session import iRODSSession
-from qtpy.QtCore import QSettings, QCoreApplication
+from qtpy.QtCore import QCoreApplication, QSettings
 from qtpy.QtWidgets import (
+    QCheckBox,
     QDialog,
     QFormLayout,
     QLineEdit,
     QMessageBox,
     QPushButton,
-    QCheckBox,
 )
 
 import bober.globals as glob

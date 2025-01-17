@@ -3,13 +3,15 @@ import posixpath
 import sys
 
 from irods.exception import CAT_NO_ACCESS_PERMISSION, OVERWRITE_WITHOUT_FORCE_FLAG
-from qtpy.QtCore import QSettings, QStandardPaths, Qt, QUrl, QSize, QCoreApplication
+from qtpy.QtCore import QCoreApplication, QSettings, QSize, QStandardPaths, Qt, QUrl
 from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence, QMovie
 from qtpy.QtWidgets import (
     QAbstractItemView,
     QAction,
     QDialog,
     QFileDialog,
+    QHBoxLayout,
+    QLabel,
     QLineEdit,
     QListWidget,
     QMenu,
@@ -20,9 +22,7 @@ from qtpy.QtWidgets import (
     QTabWidget,
     QToolBar,
     QVBoxLayout,
-    QHBoxLayout,
     QWidget,
-    QLabel,
 )
 
 import bober.globals as glob
@@ -373,8 +373,17 @@ class Window(MainWindow):
         if file != "":
             t = UploadThread(file, irods_path)
             t.signals.workerMessage.connect(self.upload_finished_notify)
+            t.signals.error.connect(self.upload_error)
             t.start()
             self.threads.append(t)
+
+    def upload_error(self, msg):
+        self.tray_icon.showMessage(
+            f"{glob.app_name}",
+            f"{msg} ",
+            QSystemTrayIcon.Information,
+            5000,
+        )
 
     def download(self):
         doc_folder = str(
@@ -416,7 +425,7 @@ class Window(MainWindow):
                 f"{glob.app_name}",
                 f"{msg} " + QCoreApplication.translate("window", "uploaded"),
                 QSystemTrayIcon.Information,
-                2000,
+                5000,
             )
 
     def download_finished(self, msg):
@@ -425,7 +434,7 @@ class Window(MainWindow):
                 f"{glob.app_name}",
                 f"{msg} " + QCoreApplication.translate("window", "downloaded"),
                 QSystemTrayIcon.Information,
-                2000,
+                5000,
             )
 
     def delete_bar(self, item):

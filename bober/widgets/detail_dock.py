@@ -1,18 +1,16 @@
+import datetime
 import posixpath
 
-from qtpy.QtCore import Qt, QCoreApplication
+from qtpy.QtCore import QCoreApplication, Qt
 from qtpy.QtWidgets import (
     QDockWidget,
     QFormLayout,
     QGroupBox,
     QLabel,
+    QPushButton,
     QVBoxLayout,
     QWidget,
-    QPushButton,
 )
-
-
-import datetime
 
 local_tz = datetime.datetime.now().astimezone().tzinfo
 

@@ -244,5 +244,9 @@
         <source>File already exists</source>
         <translation>Archivo ya existente</translation>
     </message>
+    <message>
+        <source>You do not have the right to upload files</source>
+        <translation>No tiene derecho a cargar archivos</translation>
+    </message>
 </context>
 </TS>

@@ -1,3 +1,4 @@
+from qtpy.QtCore import QCoreApplication
 from qtpy.QtWidgets import (
     QDockWidget,
     QFormLayout,
@@ -7,7 +8,6 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from qtpy.QtCore import QCoreApplication
 
 
 class ProgressDock(QDockWidget):

@@ -242,5 +242,9 @@
         <source>File already exists</source>
         <translation>Файл вже існує</translation>
     </message>
+    <message>
+        <source>You do not have the right to upload files</source>
+        <translation>Ви не маєте права завантажувати файли</translation>
+    </message>
 </context>
 </TS>
