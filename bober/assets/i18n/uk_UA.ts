@@ -96,11 +96,11 @@
     </message>
     <message>
         <source>Edit</source>
-        <translation>Змінити</translation>
+        <translation>Редагувати</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation>Параметри</translation>
+        <translation>Налаштування</translation>
     </message>
     <message>
         <source>About</source>
@@ -155,7 +155,7 @@
     <name>settings</name>
     <message>
         <source>Settings</source>
-        <translation>Параметри</translation>
+        <translation>Налаштування</translation>
     </message>
     <message>
         <source>Config path:</source>
