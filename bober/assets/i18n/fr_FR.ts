@@ -145,7 +145,7 @@
     </message>
     <message>
         <source>Once logged in you can enjoy browsing your irods instance like a regular system file explorer. You can also download those file be right-clicking and hitting the 'Download' button.</source>
-        <translation> Une fois connecté, vous pouvez naviguer dans votre instance irods comme dans un explorateur de fichiers système classique. Vous pouvez également télécharger ces fichiers en faisant un clic droit et en cliquant sur le bouton « Télécharger ».</translation>
+        <translation>Une fois connecté, vous pouvez naviguer dans votre instance irods comme dans un explorateur de fichiers système classique. Vous pouvez également télécharger ces fichiers en faisant un clic droit et en cliquant sur le bouton « Télécharger ».</translation>
     </message>
 
 </context>
