@@ -37,6 +37,7 @@ class DetailDock(QDockWidget):
         self.content_layout.addWidget(self.group_detail)
         self.layout_detail = QFormLayout(self.group_detail)
         self.filename = QLabel(self)
+        self.filename.setWordWrap(True)
         self.filename.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
@@ -112,6 +113,7 @@ class DetailDock(QDockWidget):
         modify_time = data.modify_time
 
         self.filename.setText(filename)
+        self.filename.adjustSize()
         self.replicas.setText(";".join([str(s.resource_name) for s in replicas]))
         self.coll.setText(coll.name)
         self.size.setText(sizeof_fmt(size))

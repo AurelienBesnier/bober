@@ -118,6 +118,9 @@ class Window(MainWindow):
             QCoreApplication.translate("window", "Application Started"), 3000
         )
 
+    def item_event(self, event):
+        print(event)
+
     def change_filter(self, pattern):
         for row in range(self.list_widget.count()):
             it = self.list_widget.item(row)
@@ -146,18 +149,20 @@ class Window(MainWindow):
 
     def detail_item(self, item):
         try:
-            if item.type() != 0:
+            if item and item.type() != 0:
                 if self.detail_dock.isHidden():
                     self.detail_dock.show()
-                print(posixpath.join(self.path, item.text()))
-                # meta = glob.irods_session.metadata.get(
-                #     DataObject, posixpath.join(self.path, item.text())
-                # )
-                # print(meta)
-                data = glob.irods_session.data_objects.get(
-                    posixpath.join(self.path, item.text())
-                )
-                self.detail_dock.update_info(item.text(), data)
+                path = posixpath.join(self.path, item.text())
+                print(path)
+                if glob.irods_session.data_objects.exists(path):
+                    # meta = glob.irods_session.metadata.get(
+                    #     DataObject, path
+                    # )
+                    # print(meta)
+                    data = glob.irods_session.data_objects.get(
+                        path
+                    )
+                    self.detail_dock.update_info(item.text(), data)
         except AttributeError as e:
             print(e)
 
