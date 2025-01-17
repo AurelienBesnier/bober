@@ -451,3 +451,5 @@ class Window(MainWindow):
     def keyPressEvent(self, event, **kwargs):
         if event.key() == Qt.Key.Key_F5:
             self.change_folder()
+        if event.key() == Qt.Key.Key_Return:
+            self.on_double_click(self.list_widget.currentItem())
