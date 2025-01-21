@@ -39,6 +39,14 @@
         <source>Size: </source>
         <translation>Größe: </translation>
     </message>
+    <message>
+        <source>Open</source>
+        <translation>Öffnen</translation>
+    </message>
+    <message>
+        <source>Download</source>
+        <translation>Herunterladen</translation>
+    </message>
 </context>
 <context>
     <name>window</name>
@@ -117,6 +125,10 @@
     <message>
         <source>downloaded</source>
         <translation>heruntergeladen</translation>
+    </message>
+    <message>
+        <source>Upload file</source>
+        <translation>Datei hochladen</translation>
     </message>
 
     <!--Help texts-->
@@ -225,6 +237,14 @@
     <message>
         <source>does not exist</source>
         <translation>existiert nicht</translation>
+    </message>
+    <message>
+        <source>File already exists</source>
+        <translation>Datei existiert bereits</translation>
+    </message>
+    <message>
+        <source>You do not have the right to upload files</source>
+        <translation>Sie haben nicht das Recht, Dateien hochzuladen</translation>
     </message>
 </context>
 </TS>

@@ -1,13 +1,13 @@
 import irods
 from irods.session import iRODSSession
-from qtpy.QtCore import QSettings, QCoreApplication
+from qtpy.QtCore import QCoreApplication, QSettings
 from qtpy.QtWidgets import (
+    QCheckBox,
     QDialog,
     QFormLayout,
     QLineEdit,
     QMessageBox,
     QPushButton,
-    QCheckBox,
 )
 
 import bober.globals as glob
@@ -23,7 +23,9 @@ class LoginWindow(QDialog):
 
         self.layout = QFormLayout(self)
         self.username_edit = QLineEdit(self)
-        self.username_edit.setText(str(self.settings.value("save_user", defaultValue="")))
+        self.username_edit.setText(
+            str(self.settings.value("save_user", defaultValue=""))
+        )
         self.password_edit = QLineEdit(self)
         self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.save_username = QCheckBox(self)
@@ -62,9 +64,9 @@ class LoginWindow(QDialog):
         port = self.settings.value("port")
         zone = self.settings.value("zone")
         if self.save_username.isChecked():
-            self.settings.setValue('save_user', self.username_edit.text())
+            self.settings.setValue("save_user", self.username_edit.text())
         else:
-            self.settings.setValue('save_user', "")
+            self.settings.setValue("save_user", "")
         ssl_options = {
             "irods_client_server_policy": "CS_NEG_REQUIRE",
             "irods_client_server_negotiation": "request_server_negotiation",
@@ -85,6 +87,7 @@ class LoginWindow(QDialog):
                 configure=True,
                 **ssl_options,
             )
+            glob.irods_session.collections.exists("")
         except irods.exception.NetworkException as e:
             print(e)
             msgbox = QMessageBox()
@@ -117,5 +120,6 @@ class LoginWindow(QDialog):
             msgbox.setIcon(QMessageBox.Icon.Critical)
             msgbox.exec()
             return
-
+        except Exception as e:
+            print(e)
         self.accept()

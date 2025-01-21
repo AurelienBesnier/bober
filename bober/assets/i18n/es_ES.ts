@@ -39,6 +39,15 @@
         <source>Size: </source>
         <translation>Talla: </translation>
     </message>
+
+    <message>
+        <source>Open</source>
+        <translation>Abrir</translation>
+    </message>
+    <message>
+        <source>Download</source>
+        <translation>Descargar</translation>
+    </message>
 </context>
 <context>
     <name>window</name>
@@ -118,6 +127,10 @@
         <source>downloaded</source>
         <translation>descargado</translation>
     </message>
+    <message>
+        <source>Upload file</source>
+        <translation>Cargar archivo</translation>
+    </message>
 
     <!--Help texts-->
     <message>
@@ -134,7 +147,7 @@
     </message>
     <message>
         <source>Once logged in you can enjoy browsing your irods instance like a regular system file explorer. You can also download those file be right-clicking and hitting the 'Download' button.</source>
-        <translation>Una vez iniciada la sesión, podrás navegar por tu instancia de irods como si se tratara de un explorador de archivos normal. También puede descargar esos archivos haciendo clic con el botón derecho del ratón y pulsando el botón 'Descargar'.</translation>
+        <translation>Una vez iniciada la sesión, podrás navegar por sus irod como si se tratara de un explorador de archivos normal. También puede descargar esos archivos haciendo clic con el botón derecho del ratón y pulsando el botón 'Descargar'.</translation>
     </message>
 
 </context>
@@ -226,6 +239,14 @@
     <message>
         <source>does not exist</source>
         <translation>no existe</translation>
+    </message>
+    <message>
+        <source>File already exists</source>
+        <translation>Archivo ya existente</translation>
+    </message>
+    <message>
+        <source>You do not have the right to upload files</source>
+        <translation>No tiene derecho a cargar archivos</translation>
     </message>
 </context>
 </TS>

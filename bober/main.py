@@ -1,7 +1,7 @@
 import os
 import sys
 
-from qtpy.QtCore import QSettings, QLocale, QCoreApplication
+from qtpy.QtCore import QCoreApplication, QLocale, QSettings, QTranslator
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication
 
@@ -9,7 +9,6 @@ import bober.globals as glob
 from bober.utils import assets_folder
 from bober.version import __version__
 from bober.windows.window import Window
-from qtpy.QtCore import QTranslator
 
 
 def quit_application():
@@ -24,9 +23,9 @@ if __name__ == "__main__":
     app.setApplicationName(glob.app_name)
     app.setApplicationVersion(__version__)
     settings = QSettings()
-    user_local = str(settings.value("locale", defaultValue=""))
+    user_locale = str(settings.value("locale", defaultValue=""))
     translator = QTranslator()
-    locale = QLocale(user_local) if user_local != "" else QLocale()
+    locale = QLocale(user_locale) if user_locale != "" else QLocale()
     if translator.load(locale, "", "", str(assets_folder() / "i18n")):
         QCoreApplication.installTranslator(translator)
     win = Window()

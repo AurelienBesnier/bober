@@ -1,17 +1,17 @@
 import json
 
 from PySide6.QtWidgets import QMessageBox
-from qtpy.QtCore import QSettings, QStandardPaths, Qt, QCoreApplication
+from qtpy.QtCore import QCoreApplication, QSettings, QStandardPaths, Qt
 from qtpy.QtGui import QIntValidator
 from qtpy.QtWidgets import (
+    QCheckBox,
+    QComboBox,
     QFileDialog,
     QGridLayout,
     QLabel,
     QLineEdit,
     QPushButton,
     QWidget,
-    QCheckBox,
-    QComboBox,
 )
 
 import bober.globals as glob

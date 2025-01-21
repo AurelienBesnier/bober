@@ -39,6 +39,14 @@
         <source>Size: </source>
         <translation>Розмір: </translation>
     </message>
+    <message>
+        <source>Open</source>
+        <translation>Відкрити</translation>
+    </message>
+    <message>
+        <source>Download</source>
+        <translation>Завантажити</translation>
+    </message>
 </context>
 <context>
     <name>window</name>
@@ -88,11 +96,11 @@
     </message>
     <message>
         <source>Edit</source>
-        <translation>Змінити</translation>
+        <translation>Редагувати</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation>Параметри</translation>
+        <translation>Налаштування</translation>
     </message>
     <message>
         <source>About</source>
@@ -118,6 +126,11 @@
         <source>downloaded</source>
         <translation>завантажено</translation>
     </message>
+    <message>
+        <source>Upload file</source>
+        <translation>Завантажити файл</translation>
+    </message>
+
 
     <!--Help texts-->
     <message>
@@ -142,7 +155,7 @@
     <name>settings</name>
     <message>
         <source>Settings</source>
-        <translation>Параметри</translation>
+        <translation>Налаштування</translation>
     </message>
     <message>
         <source>Config path:</source>
@@ -224,6 +237,14 @@
     <message>
         <source>does not exist</source>
         <translation>не існує</translation>
+    </message>
+    <message>
+        <source>File already exists</source>
+        <translation>Файл вже існує</translation>
+    </message>
+    <message>
+        <source>You do not have the right to upload files</source>
+        <translation>Ви не маєте права завантажувати файли</translation>
     </message>
 </context>
 </TS>

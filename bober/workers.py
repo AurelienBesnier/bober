@@ -2,8 +2,13 @@ import os
 import posixpath
 import traceback
 
-from irods.exception import CAT_NO_ROWS_FOUND, CollectionDoesNotExist
-from qtpy.QtCore import QObject, QThread, Signal, QCoreApplication
+import natsort
+from irods.exception import (
+    CAT_NO_ROWS_FOUND,
+    CollectionDoesNotExist,
+    CAT_NO_ACCESS_PERMISSION,
+)
+from qtpy.QtCore import QCoreApplication, QObject, QThread, Signal
 from qtpy.QtWidgets import QListWidgetItem
 
 import bober.globals as glob
@@ -33,7 +38,8 @@ class ChangeFolderThread(QThread):
 
     def run(self):
         self.signals.show_change.emit()
-        dirs = [QListWidgetItem(self.folder_icon, "..")]
+        back = [QListWidgetItem(self.folder_icon, "..")]
+        dirs = []
         files = []
         coll = glob.irods_session.collections.get(self.path)
         dirs.extend(
@@ -46,13 +52,50 @@ class ChangeFolderThread(QThread):
             ]
         )
 
-        for directory in dirs:
+        back += natsort.natsorted(dirs, key=lambda x: x.text())
+        files = natsort.natsorted(files, key=lambda x: x.text())
+
+        for directory in back:
             self.list_widget.addItem(directory)
         for file in files:
             self.list_widget.addItem(file)
 
-        self.list_widget.sortItems()
         self.signals.hide_change.emit()
+
+
+class UploadThread(QThread):
+    def __init__(self, path, upload_targe):
+        super().__init__()
+        self.path = path
+        self.upload_target = upload_targe
+        self.signals = WorkerSignalsMsg()
+
+    def run(self) -> None:
+        try:
+            try:
+                # If collection
+                if glob.irods_session.collections.exists(self.upload_target):
+                    self.signals.error.emit(
+                        QCoreApplication.translate("worker", "File already exists")
+                    )
+                else:
+                    glob.irods_session.data_objects.put(self.path, self.upload_target)
+                self.signals.workerMessage.emit(self.path)
+            except CAT_NO_ROWS_FOUND as e:
+                print(e)
+        except CAT_NO_ACCESS_PERMISSION:
+            print(traceback.format_exc())
+            self.signals.error.emit(
+                QCoreApplication.translate(
+                    "worker", "You do not have the right to upload files"
+                )
+            )
+        except Exception:
+            print(traceback.format_exc(), flush=True)
+            self.signals.error.emit(traceback.format_exc())
+        finally:
+            self.sleep(2)
+            self.signals.finished.emit()
 
 
 class DownloadThread(QThread):

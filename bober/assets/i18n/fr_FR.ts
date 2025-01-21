@@ -38,6 +38,14 @@
         <source>Size: </source>
         <translation>Taille: </translation>
     </message>
+    <message>
+        <source>Open</source>
+        <translation>Ouvrir</translation>
+    </message>
+    <message>
+        <source>Download</source>
+        <translation>Télécharger</translation>
+    </message>
 </context>
 <context>
     <name>window</name>
@@ -117,6 +125,10 @@
         <source>downloaded</source>
         <translation>téléchargé</translation>
     </message>
+    <message>
+        <source>Upload file</source>
+        <translation>Téléverser fichier</translation>
+    </message>
 
     <!--Help texts-->
     <message>
@@ -133,7 +145,7 @@
     </message>
     <message>
         <source>Once logged in you can enjoy browsing your irods instance like a regular system file explorer. You can also download those file be right-clicking and hitting the 'Download' button.</source>
-        <translation> Une fois connecté, vous pouvez naviguer dans votre instance irods comme dans un explorateur de fichiers système classique. Vous pouvez également télécharger ces fichiers en faisant un clic droit et en cliquant sur le bouton « Télécharger ».</translation>
+        <translation>Une fois connecté, vous pouvez naviguer dans votre instance irods comme dans un explorateur de fichiers système classique. Vous pouvez également télécharger ces fichiers en faisant un clic droit et en cliquant sur le bouton « Télécharger ».</translation>
     </message>
 
 </context>
@@ -224,6 +236,14 @@
     <message>
         <source>does not exist</source>
         <translation>n&apos;existe pas</translation>
+    </message>
+    <message>
+        <source>File already exists</source>
+        <translation>Le fichier existe déjà</translation>
+    </message>
+    <message>
+        <source>You do not have the right to upload files</source>
+        <translation>Vous n'avez pas le droit de téléverser des fichiers</translation>
     </message>
 </context>
 </TS>

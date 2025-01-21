@@ -39,6 +39,14 @@
         <source>Size: </source>
         <translation>Размер: </translation>
     </message>
+    <message>
+        <source>Open</source>
+        <translation>Открыть</translation>
+    </message>
+    <message>
+        <source>Download</source>
+        <translation>Скачать</translation>
+    </message>
 </context>
 <context>
     <name>window</name>
@@ -117,6 +125,10 @@
     <message>
         <source>downloaded</source>
         <translation>загружено</translation>
+    </message>
+    <message>
+        <source>Upload file</source>
+        <translation>Загрузить файл</translation>
     </message>
 
     <!--Help texts-->
@@ -225,6 +237,14 @@
     <message>
         <source>does not exist</source>
         <translation>не существует</translation>
+    </message>
+    <message>
+        <source>File already exists</source>
+        <translation>Файл уже существует</translation>
+    </message>
+    <message>
+        <source>You do not have the right to upload files</source>
+        <translation>Вам не разрешено загружать файлы</translation>
     </message>
 </context>
 </TS>

@@ -1,15 +1,16 @@
-from qtpy.QtCore import Qt, QCoreApplication
+import datetime
+import posixpath
+
+from qtpy.QtCore import QCoreApplication, Qt
 from qtpy.QtWidgets import (
     QDockWidget,
     QFormLayout,
     QGroupBox,
     QLabel,
+    QPushButton,
     QVBoxLayout,
     QWidget,
 )
-
-
-import datetime
 
 local_tz = datetime.datetime.now().astimezone().tzinfo
 
@@ -23,8 +24,8 @@ def sizeof_fmt(num, suffix="B"):
 
 
 class DetailDock(QDockWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setFeatures(
             QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable
         )
@@ -36,6 +37,7 @@ class DetailDock(QDockWidget):
         self.content_layout.addWidget(self.group_detail)
         self.layout_detail = QFormLayout(self.group_detail)
         self.filename = QLabel(self)
+        self.filename.setWordWrap(True)
         self.filename.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
@@ -55,6 +57,13 @@ class DetailDock(QDockWidget):
         self.modify_time.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
+        self.download_button = QPushButton(
+            QCoreApplication.translate("detail", "Download")
+        )
+        self.download_button.clicked.connect(parent.download)
+
+        self.open_button = QPushButton(QCoreApplication.translate("detail", "Open"))
+        self.open_button.clicked.connect(self.open_file)
 
         self.layout_detail.addRow(
             QCoreApplication.translate("detail", "File: "), self.filename
@@ -74,7 +83,14 @@ class DetailDock(QDockWidget):
         self.layout_detail.addRow(
             QCoreApplication.translate("detail", "Size: "), self.size
         )
+        self.layout_detail.addRow(self.open_button)
+        self.layout_detail.addRow(self.download_button)
         self.setWidget(self.content)
+
+    def open_file(self):
+        self.parent().open_file(
+            posixpath.join(self.parent().path, self.filename.text())
+        )
 
     def update_info(self, filename, data) -> None:
         """
@@ -97,6 +113,7 @@ class DetailDock(QDockWidget):
         modify_time = data.modify_time
 
         self.filename.setText(filename)
+        self.filename.adjustSize()
         self.replicas.setText(";".join([str(s.resource_name) for s in replicas]))
         self.coll.setText(coll.name)
         self.size.setText(sizeof_fmt(size))
