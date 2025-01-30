@@ -247,4 +247,16 @@
         <translation>Вам не разрешено загружать файлы</translation>
     </message>
 </context>
+
+<context>
+    <name>widget</name>
+    <message>
+        <source>Confirm</source>
+        <translation>Подтвердите</translation>
+    </message>
+    <message>
+        <source>Replica</source>
+        <translation>Реплика</translation>
+    </message>
+</context>
 </TS>

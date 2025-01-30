@@ -247,4 +247,17 @@
         <translation>Sie haben nicht das Recht, Dateien hochzuladen</translation>
     </message>
 </context>
+
+
+<context>
+    <name>widget</name>
+    <message>
+        <source>Confirm</source>
+        <translation>Bestätigen</translation>
+    </message>
+    <message>
+        <source>Replica</source>
+        <translation>Replikat</translation>
+    </message>
+</context>
 </TS>

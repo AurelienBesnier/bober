@@ -246,4 +246,16 @@
         <translation>Vous n'avez pas le droit de téléverser des fichiers</translation>
     </message>
 </context>
+
+<context>
+    <name>widget</name>
+    <message>
+        <source>Confirm</source>
+        <translation>Confirmer</translation>
+    </message>
+    <message>
+        <source>Replica</source>
+        <translation>Réplique</translation>
+    </message>
+</context>
 </TS>

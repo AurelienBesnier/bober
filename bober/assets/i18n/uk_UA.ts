@@ -247,4 +247,17 @@
         <translation>Ви не маєте права завантажувати файли</translation>
     </message>
 </context>
+
+<context>
+    <name>widget</name>
+    <message>
+        <source>Confirm</source>
+        <translation>Підтвердити</translation>
+    </message>
+    <message>
+        <source>Replica</source>
+        <translation>Репліка</translation>
+    </message>
+</context>
+
 </TS>

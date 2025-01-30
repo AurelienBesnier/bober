@@ -249,4 +249,17 @@
         <translation>No tiene derecho a cargar archivos</translation>
     </message>
 </context>
+
+
+<context>
+    <name>widget</name>
+    <message>
+        <source>Confirm</source>
+        <translation>Confirme</translation>
+    </message>
+    <message>
+        <source>Replica</source>
+        <translation>Réplica</translation>
+    </message>
+</context>
 </TS>
