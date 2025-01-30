@@ -17,7 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dynamic = ["version", "readme"]
-dependencies = ["python-irodsclient", "PySide6", "qtpy", "natsort"]
+dependencies = ["python-irodsclient", "PySide6", "qtpy", "natsort", "pillow"]
 
 [project.optional-dependencies]
 exe = ["pyinstaller"]
