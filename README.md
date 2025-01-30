@@ -1,5 +1,5 @@
 # Бобер
-[![Build and Deploy](https://github.com/AurelienBesnier/bober/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/AurelienBesnier/bober/actions/workflows/python-package-conda.yml)
+[![Build and Deploy](https://github.com/AurelienBesnier/bober/actions/workflows/python-app.yml/badge.svg)](https://github.com/AurelienBesnier/bober/actions/workflows/python-app.yml)
 
 Cross-platform iRODS gui
 
@@ -7,6 +7,7 @@ Cross-platform iRODS gui
 * Python >=3.9
 * PySide6 or PyQT6
 * python-irodsclient
+* natsort
 
 ### To run
 
