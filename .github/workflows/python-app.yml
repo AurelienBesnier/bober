@@ -1,4 +1,4 @@
-name: Python Package using Conda
+name: Build app
 
 on:
   push:
@@ -19,23 +19,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        solver: ["libmamba"]
       max-parallel: 5
-      
-    environment: anaconda_build
   
     steps:
     - uses: actions/checkout@v4
-    - uses: conda-incubator/setup-miniconda@v3
+    - uses: actions/setup-python@v5
       with:
-        auto-update-conda: true
-        python-version: ${{ matrix.python-version }}
-        environment-file: conda/environment.yml
-        conda-solver: ${{ matrix.solver }}
-        auto-activate-base: false
+       python-version: 3.13
     - name: build
       run: |
         python -m pip install .
+        python -m pip install pyinstaller
         cd bober/
         pyinstaller main.py --clean \
         --optimize 1 -F \
