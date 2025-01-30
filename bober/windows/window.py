@@ -3,6 +3,7 @@ import posixpath
 import sys
 
 from irods.exception import CAT_NO_ACCESS_PERMISSION, OVERWRITE_WITHOUT_FORCE_FLAG
+from irods.models import Resource
 from qtpy.QtCore import QCoreApplication, QSettings, QSize, QStandardPaths, Qt, QUrl
 from qtpy.QtGui import QDesktopServices, QIcon, QKeySequence, QMovie
 from qtpy.QtWidgets import (
@@ -30,6 +31,7 @@ from bober.utils import assets_folder, bober_path
 from bober.version import __version__
 from bober.widgets.detail_dock import DetailDock
 from bober.widgets.progress_dock import ProgressDock
+from bober.widgets.upload_dialog import UploadDialog
 from bober.windows.login_window import LoginWindow
 from bober.windows.main_window import MainWindow
 from bober.windows.settings_window import SettingsWindow
@@ -159,9 +161,7 @@ class Window(MainWindow):
                     #     DataObject, path
                     # )
                     # print(meta)
-                    data = glob.irods_session.data_objects.get(
-                        path
-                    )
+                    data = glob.irods_session.data_objects.get(path)
                     self.detail_dock.update_info(item.text(), data)
         except AttributeError as e:
             print(e)
@@ -375,8 +375,19 @@ class Window(MainWindow):
         irods_path = posixpath.join(self.path, os.path.basename(file))
         print(irods_path)
 
+        resources = [
+            x[Resource.name]
+            for x in glob.irods_session.query(Resource)
+            if x[Resource.parent] is None
+        ]
+
+        upload_dialog = UploadDialog(self, resources)
+
+        upload_dialog.exec()
+        selected_replica = upload_dialog.replica_upload_box.currentText()
+
         if file != "":
-            t = UploadThread(file, irods_path)
+            t = UploadThread(file, irods_path, selected_replica)
             t.signals.workerMessage.connect(self.upload_finished_notify)
             t.signals.error.connect(self.upload_error)
             t.start()

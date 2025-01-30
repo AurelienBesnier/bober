@@ -8,6 +8,8 @@ from irods.exception import (
     CollectionDoesNotExist,
     CAT_NO_ACCESS_PERMISSION,
 )
+
+import irods.keywords as kw
 from qtpy.QtCore import QCoreApplication, QObject, QThread, Signal
 from qtpy.QtWidgets import QListWidgetItem
 
@@ -64,10 +66,11 @@ class ChangeFolderThread(QThread):
 
 
 class UploadThread(QThread):
-    def __init__(self, path, upload_targe):
+    def __init__(self, path, upload_target, ressource):
         super().__init__()
         self.path = path
-        self.upload_target = upload_targe
+        self.upload_target = upload_target
+        self.ressource = ressource
         self.signals = WorkerSignalsMsg()
 
     def run(self) -> None:
@@ -79,7 +82,11 @@ class UploadThread(QThread):
                         QCoreApplication.translate("worker", "File already exists")
                     )
                 else:
-                    glob.irods_session.data_objects.put(self.path, self.upload_target)
+                    glob.irods_session.data_objects.put(
+                        self.path,
+                        self.upload_target,
+                        **{kw.DEST_RESC_NAME_KW: self.ressource},
+                    )
                 self.signals.workerMessage.emit(self.path)
             except CAT_NO_ROWS_FOUND as e:
                 print(e)
