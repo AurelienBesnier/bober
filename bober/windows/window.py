@@ -371,22 +371,22 @@ class Window(MainWindow):
             QCoreApplication.translate("window", "Upload file"),
         )[0]
 
-        print(file)
-        irods_path = posixpath.join(self.path, os.path.basename(file))
-        print(irods_path)
-
-        resources = [
-            x[Resource.name]
-            for x in glob.irods_session.query(Resource)
-            if x[Resource.parent] is None
-        ]
-
-        upload_dialog = UploadDialog(self, resources)
-
-        upload_dialog.exec()
-        selected_replica = upload_dialog.replica_upload_box.currentText()
-
         if file != "":
+            print(file)
+            irods_path = posixpath.join(self.path, os.path.basename(file))
+            print(irods_path)
+
+            resources = [
+                x[Resource.name]
+                for x in glob.irods_session.query(Resource)
+                if x[Resource.parent] is None
+            ]
+
+            upload_dialog = UploadDialog(self, resources)
+
+            upload_dialog.exec()
+            selected_replica = upload_dialog.replica_upload_box.currentText()
+
             t = UploadThread(file, irods_path, selected_replica)
             t.signals.workerMessage.connect(self.upload_finished_notify)
             t.signals.error.connect(self.upload_error)
