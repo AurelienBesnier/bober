@@ -60,7 +60,7 @@
     </message>
     <message>
         <source>Explorer</source>
-        <translation>Експлорер</translation>
+        <translation>Провідник</translation>
     </message>
     <message>
         <source>Application Started</source>
