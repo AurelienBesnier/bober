@@ -360,7 +360,7 @@ class Window(MainWindow):
             f"<p><img width='250' height='250' src='{bober_path()}'><p>"
             f"<p> version: {__version__}<br>"
             f"Python version: {sys.version}</p>"
-            "<p><a href='https://github.com/AurelienBesnier/irods-gui'>Github</a></p>"
+            "<p><a href='https://github.com/AurelienBesnier/irods-gui'>GitHub</a></p>"
             "</div>"
         )
         msg_box.exec()
@@ -413,9 +413,10 @@ class Window(MainWindow):
             directory=doc_folder,
             options=QFileDialog.Option.ShowDirsOnly,
         )
-        if self.progress_dock.isHidden():
-            self.progress_dock.show()
+        print(folder)
         if folder != "":
+            if self.progress_dock.isHidden():
+                self.progress_dock.show()
             download_targets = self.list_widget.selectedIndexes()
             for idx in download_targets:
                 target = self.list_widget.itemFromIndex(idx)

@@ -28,7 +28,7 @@ Follow installation instructions. Use default installation settings.
 Execute next commands in anaconda prompt.
 
 ```bash
-mamba env create -n bober conda/environment.yml
+mamba env create -n bober -f conda/environment.yml
 mamba activate bober
 pip install -e .
 ```
