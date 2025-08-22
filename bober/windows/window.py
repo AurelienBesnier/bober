@@ -360,7 +360,7 @@ class Window(MainWindow):
             f"<p><img width='250' height='250' src='{bober_path()}'><p>"
             f"<p> version: {__version__}<br>"
             f"Python version: {sys.version}</p>"
-            "<p><a href='https://github.com/AurelienBesnier/irods-gui'>Github</a></p>"
+            "<p><a href='https://github.com/AurelienBesnier/irods-gui'>GitHub</a></p>"
             "</div>"
         )
         msg_box.exec()
@@ -371,22 +371,22 @@ class Window(MainWindow):
             QCoreApplication.translate("window", "Upload file"),
         )[0]
 
-        print(file)
-        irods_path = posixpath.join(self.path, os.path.basename(file))
-        print(irods_path)
-
-        resources = [
-            x[Resource.name]
-            for x in glob.irods_session.query(Resource)
-            if x[Resource.parent] is None
-        ]
-
-        upload_dialog = UploadDialog(self, resources)
-
-        upload_dialog.exec()
-        selected_replica = upload_dialog.replica_upload_box.currentText()
-
         if file != "":
+            print(file)
+            irods_path = posixpath.join(self.path, os.path.basename(file))
+            print(irods_path)
+
+            resources = [
+                x[Resource.name]
+                for x in glob.irods_session.query(Resource)
+                if x[Resource.parent] is None
+            ]
+
+            upload_dialog = UploadDialog(self, resources)
+
+            upload_dialog.exec()
+            selected_replica = upload_dialog.replica_upload_box.currentText()
+
             t = UploadThread(file, irods_path, selected_replica)
             t.signals.workerMessage.connect(self.upload_finished_notify)
             t.signals.error.connect(self.upload_error)
@@ -413,9 +413,10 @@ class Window(MainWindow):
             directory=doc_folder,
             options=QFileDialog.Option.ShowDirsOnly,
         )
-        if self.progress_dock.isHidden():
-            self.progress_dock.show()
+        print(folder)
         if folder != "":
+            if self.progress_dock.isHidden():
+                self.progress_dock.show()
             download_targets = self.list_widget.selectedIndexes()
             for idx in download_targets:
                 target = self.list_widget.itemFromIndex(idx)

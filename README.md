@@ -11,16 +11,24 @@ Cross-platform iRODS gui
 
 ### To run
 
+#### Create a virtual environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install . # or pip install -e.
+```
+
+#### Create a conda environment
+
 Install Miniforge: https://github.com/conda-forge/miniforge
 
 Follow installation instructions. Use default installation settings.
 
 Execute next commands in anaconda prompt.
 
-#### Create a conda environment
-
 ```bash
-mamba env create -n bober conda/environment.yml
+mamba env create -n bober -f conda/environment.yml
 mamba activate bober
 pip install -e .
 ```
