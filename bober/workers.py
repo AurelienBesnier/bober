@@ -127,7 +127,17 @@ class DownloadThread(QThread):
                         glob.irods_session.data_objects.get(d.path, save_folder)
                         self.progress_bar.setValue(self.progress_bar.value() + 1)
                 else:
-                    glob.irods_session.data_objects.get(irods_path, self.folder)
+                    obj = glob.irods_session.data_objects.get(irods_path)
+                    for rep in obj.replicas:
+                        opts = {kw.REPL_NUM_KW: rep.number}
+                        try:
+                            glob.irods_session.data_objects.get(irods_path,
+                                                            self.folder, **opts)
+                        except Exception as e:
+                            traceback.print_exc()
+                            print(
+                                f"Could not open replica {rep} for object {irods_path}: " + str(
+                                    e))
                     self.progress_bar.setValue(1)
                 self.signals.workerMessage.emit(irods_path)
 
