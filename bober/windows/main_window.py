@@ -26,11 +26,11 @@ class MainWindow(QMainWindow):
         # Get the screen where the mouse is
         global_mouse_pos = QCursor.pos()
         mouse_screen = QGuiApplication.screenAt(global_mouse_pos)
+        if mouse_screen:
+            sr = QScreen.availableGeometry(mouse_screen)
+            frame_rect = QRect(QPoint(), self.frameSize().boundedTo(sr.size()))
 
-        sr = QScreen.availableGeometry(mouse_screen)
-        frame_rect = QRect(QPoint(), self.frameSize().boundedTo(sr.size()))
-
-        self.move(sr.center() - frame_rect.center())
+            self.move(sr.center() - frame_rect.center())
 
     def set_status_bar_message(self, message: str, msecs=0) -> None:
         """
