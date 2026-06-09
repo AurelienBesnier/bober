@@ -22,6 +22,9 @@ dependencies = ["python-irodsclient", "PySide6", "qtpy", "natsort", "pillow"]
 [project.optional-dependencies]
 exe = ["pyinstaller"]
 
+[project.gui-scripts]
+bober = "bober.main:main"
+
 [tool.setuptools.dynamic]
 version = {attr = "bober.__version__"}
 readme = {file = ["README.md"]}

@@ -16,7 +16,7 @@ def quit_application():
     sys.exit(app.exit())
 
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(os.path.join(assets_folder(), "icon.ico")))
     app.setOrganizationName(glob.app_name)
@@ -34,3 +34,6 @@ if __name__ == "__main__":
     app.setQuitOnLastWindowClosed(True)
     app.lastWindowClosed.connect(quit_application)
     app.exec()
+
+if __name__ == "__main__":
+    main()
