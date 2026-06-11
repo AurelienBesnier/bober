@@ -13,7 +13,6 @@ from bober.windows.window import Window
 
 def quit_application():
     print(QCoreApplication.translate("main", "Quitting application"))
-    sys.exit(app.exit())
 
 
 def main():
